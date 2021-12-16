@@ -1,28 +1,29 @@
 #include <iostream>
 #include <ncurses.h>
 
-#include "board.h"
+#include "map.h"
 #include "player.h"
 #include "pokemon.h"
 
 int main(){
 
 	WINDOW *win, *menu;
+	win = initscr();
 
 	srand(time(NULL));
 
-	board b = initBoard(15, 30);
+	int mapxsize = 15;
+	int mapysize = 30;
+	map b = initMap(mapxsize, mapysize);
+	
 	player p = initPlayer("Philippe", &b, b.height/2, b.width/2);
-	
-	pokemon pikachu = initPokemon("Pikachu", &b, position{0,0}, 50, 10, 10, ELEK, PIKACHU);
-	pokemon salameche = initPokemon("Salameche", &b, position{12, 2}, 50, 10, 10, FEU, SALAMECHE);
-	pokemon carapuce = initPokemon("Carapuce", &b, position{5,25}, 50, 10, 10, EAU, CARAPUCE);
-	pokemon bulbizarre = initPokemon("Bulbizarre", &b, position{12,28}, 50, 10, 10, PLANTE, BULBIZARRE);
-	
 
-	win = initscr();
+	addPokemons(&b, &(p.pkdx), 15);
 
-	refreshBoard(win, b);
+	refreshMap(win, b);
+
+	char* msg = (char*)malloc(50); //TEST
+
 
 	int c = 0;
 	while (c!=127){
@@ -33,8 +34,14 @@ int main(){
 			clear();
 		}
 
+		for (int i = 0; i < p.pkdx.size; i++){
+			sprintf(msg, ": %d\n: %d\n", p.pkdx.existingSpecies[i], p.pkdx.knownSpecies[i]);
+			mvprintw(0, COLS/2-(p.pkdx.size/2)+i*4, msg);	
+		}
+		
+
 		movePlayer(&p, &b, c);
-		refreshBoard(win, b);
+		refreshMap(win, b);
 
 	}
 

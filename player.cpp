@@ -1,25 +1,30 @@
 #include <iostream>
 #include <string>
 #include "player.h"
-#include "board.h"
+#include "pokemon.h"
+#include "map.h"
 
 using namespace std;
 
-player initPlayer(string name, board* b, int x, int y){
+player initPlayer(string name, map* b, int x, int y){
 	player p;
-	p.name = (char*)malloc(20);
-	// strcpy(p.name, name); //TEST
+	p.name = name;
 	p.pos.x = x;
 	p.pos.y = y;
+	p.pokeballs = 15;
+
+	initPokedex(&(p.pkdx));
 
 	setTab(JOUEUR, b, p.pos.x, p.pos.y);
 
 	return p;
 }
 
-void movePlayer(player* p, board* b, char direction){
+void movePlayer(player* p, map* b, char direction){
 	int xmv = 0;
 	int ymv = 0;
+	species s;
+	int c;
 
 	if (64 < direction && direction < 69){
 		setTab(0, b, p->pos.x, p->pos.y);
@@ -34,8 +39,12 @@ void movePlayer(player* p, board* b, char direction){
 			ymv = -1;
 		}
 
-		if (getTab(*b, p->pos.x+xmv, p->pos.y+ymv)==0) {
-			
+		c = getTab(*b, p->pos.x+xmv, p->pos.y+ymv);
+		if (c!=0) {
+			s = (species)c;
+			if (!isKnown(s, p->pkdx)){
+				learn(s, &(p->pkdx));
+			}
 		}
 
 		p->pos.x += xmv;

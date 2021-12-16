@@ -2,23 +2,21 @@
 #define PLAYER_H
 
 #include <string>
-#include "board.h"
+#include "map.h"
+#include "pokemon.h"
 
 using namespace std;
 
 #define JOUEUR -1
 
-typedef struct position{
-	int x;
-	int y;
-} position;
-
 typedef struct player{
 	string name;
 	position pos;
+	int pokeballs;
+	pokedex pkdx;
 } player;
 
-player initPlayer(string name, board*, int, int);
-void movePlayer(player*, board*, char);
+player initPlayer(string name, map*, int, int);
+void movePlayer(player*, map*, char);
 
 #endif

@@ -2,20 +2,16 @@
 #define POKE_H
 
 #include <string>
-#include "board.h"
-#include "player.h"
+#include "map.h"
 
 using namespace std;
 
 typedef enum type {ELEK, FEU, EAU, PLANTE} type;
 typedef enum species {PIKACHU=1, SALAMECHE, CARAPUCE, BULBIZARRE} species;
-
-// char const * pokedex[] = {"Pikachu", "Salameche", "Carapuce", "Bulbizarre"};
-// int pokedexSize = 4;
-
+#define PKDXS 4
 
 typedef struct pokemon{
-	string name;
+	char const * name;
 	position pos;
 	int pv;
 	int atq;
@@ -24,8 +20,22 @@ typedef struct pokemon{
 	species s;
 } pokemon;
 
+typedef struct pokedex{
+	// Contains 1 for existing species, 0 otherwise
+	int* existingSpecies;
+	// Contains 1 for known species, 0 otherwise
+	int* knownSpecies;
+	int size;
+} pokedex;
 
-pokemon initPokemon(string name, board*, position, int, int, int, type, species);
 
+
+
+pokemon initPokemon(map* b, position pos, species e);
+void initPokedex(pokedex*);
+void appendPkdx(pokedex* pkdx, species s);
+void addPokemons(map* m, pokedex* pkdx, int nbpkm);
+int isKnown(species s, pokedex pdx);
+void learn(species s, pokedex* pdx);
 
 #endif

@@ -1,13 +1,13 @@
 #include <iostream>
 #include <ncurses.h>
 
-#include "board.h"
+#include "map.h"
 #include "pokemon.h"
 
 using namespace std;
 
 /*
-The board game has the x axis downward, the y axis from left to right
+The map game has the x axis downward, the y axis from left to right
 	0 ---> y
 	|
 	v
@@ -17,16 +17,16 @@ The board game has the x axis downward, the y axis from left to right
 // Needs to be updated with the species enum
 char const * displayChar[] = {"#", ".", "P", "S", "C", "B"};
 
-int getTab(board b, int x, int y){
+int getTab(map b, int x, int y){
 	return b.grid[x*b.width+y];
 }
 
-void setTab(int val, board* b, int x, int y){
+void setTab(int val, map* b, int x, int y){
 	b->grid[x*b->width+y] = val;
 }
 
-board initBoard(int height, int width){
-	board b;
+map initMap(int height, int width){
+	map b;
 	b.height = height;
 	b.width = width;
 	b.grid = (int*)malloc(sizeof(int)*b.width*b.height);
@@ -38,7 +38,7 @@ board initBoard(int height, int width){
 	return b;
 }
 
-void refreshBoard(WINDOW* win, board b){
+void refreshMap(WINDOW* win, map b){
 
 	// -1	0	1	2	...
 	//  #	.	P	C	...
@@ -51,13 +51,7 @@ void refreshBoard(WINDOW* win, board b){
 	char const * c;
 	for (int i = 0; i < b.height; i++){
 		for (int j = 0; j < b.width; j++){
-			if (getTab(b, i, j)==-1){
-				c = "#";
-			} else {
-				c = displayChar[getTab(b, i, j)+1];
-			}
-
-			// sprintf(c, "%d", getTab(b, i, j)); //TEST
+			c = displayChar[getTab(b, i, j)+1];
 			mvprintw(bposx+i+1, bposy+j+1, c);
 		}
 	}
