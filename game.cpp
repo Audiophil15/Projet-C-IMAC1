@@ -7,28 +7,38 @@
 
 int main(){
 
+	// Creates pointers to place windows of ncurses in
 	WINDOW *win, *menu;
+
+	// inits the screen with the whole term as a window
 	win = initscr();
+
+	// First refresh allows curs_set() to work
 	refresh();
 	noecho();
 	curs_set(0);
 
+	// Rand seed init
 	srand(time(NULL));
 
+	// Init of the sides of the map, then the map itself is initialised and zeroed
 	int mapxsize = 3*LINES/4;
 	int mapysize = 3*COLS/4;
 	map b = initMap(mapxsize, mapysize);
 	
+	// Creates a player and puts it in the map
 	player p = initPlayer("Philippe", &b, b.height/2, b.width/2);
 
+	// Adds pokemons to the map, updates the pokedex when a new species is created
 	addPokemons(&b, &(p.pkdx), 10);
 
-	refreshMap(win, b); //TEST
+	// First refresh of the map to see it when starting
+	refreshMap(win, b);
 
-	char* msg = (char*)malloc(50); //TEST
-
-
+	// Will receive the code returned by getch();
 	int c = 0;
+
+	// Beginning of the game, stop when all species have been encountered, or when Backspace is hit
 	while (!pokedexFull(p.pkdx) && c!=127){
 		c = getch();
 		
@@ -37,25 +47,13 @@ int main(){
 			clear();
 		}
 
-		// printf("-----\n");
-		// for (int i = 0; i < p.pkdx.size; i++){
-		// 	printf(": %d ", p.pkdx.existingSpecies[i]);
-		// }
-		// printf("\n");
-		// for (int i = 0; i < p.pkdx.size; i++){
-		// 	printf(": %d ", p.pkdx.knownSpecies[i]);
-		// }
-		// printf("\n");
-
+		// Move the player if c is the code of an arrow
 		movePlayer(&p, &b, c);
-		refreshMap(win, b);
 
-		// for (int i = 0; i < p.pkdx.size; i++){
-		// 	sprintf(msg, ": %d ", p.pkdx.knownSpecies[i]);
-		// 	mvprintw(0, COLS/2-(p.pkdx.size/2)+i*4, msg);	
-		// } //TEST
+		refreshMap(win, b);
 		
 	}
 
+	// Closes ncurses
 	endwin();
 }

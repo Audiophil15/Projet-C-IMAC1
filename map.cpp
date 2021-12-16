@@ -12,20 +12,26 @@ The map game has the x axis downward, the y axis from left to right
 	|
 	v
 	x
+
+The map contains -1 for the player, 0 for an empty case, and integers from 1 to n for pokemons
+
 */
 
-// Needs to be updated with the species enum
+// Must to be updated when species enum is changed
 char const * displayChar[] = {"#", " ", "P", "S", "C", "B"};
 
 int getTab(map b, int x, int y){
+	/* map getter of a case's content */
 	return b.grid[x*b.width+y];
 }
 
 void setTab(int val, map* b, int x, int y){
+	/* map setter of a case's content */
 	b->grid[x*b->width+y] = val;
 }
 
 map initMap(int height, int width){
+	/* Initialises the map with given dimensions and fills them with 0s */
 	map b;
 	b.height = height;
 	b.width = width;
@@ -39,17 +45,20 @@ map initMap(int height, int width){
 }
 
 void refreshMap(WINDOW* win, map b){
+	/* Refreshes the map display according to what's in the map's grid */
 
 	// -1	0	1	2	...
 	//  #	.	P	C	...
 
+	// Contain the position x and y of the map box
 	int bposx = (LINES-b.height+2)/2;
 	int bposy = (COLS-b.width+2)/2;
-	// TEST
+	// Derivate window of the main window
 	b.win = derwin(win, b.height+2, b.width+2, bposx, bposy);
 	box(b.win, ACS_VLINE, ACS_HLINE);
 
 	char const * c;
+	// Adds on the screen the character according to the number read in the grid
 	for (int i = 0; i < b.height; i++){
 		for (int j = 0; j < b.width; j++){
 			c = displayChar[getTab(b, i, j)+1];
@@ -57,5 +66,6 @@ void refreshMap(WINDOW* win, map b){
 		}
 	}
 
+	// Refreshes only the subwin, little savings are savings !
 	wrefresh(b.win);
 }

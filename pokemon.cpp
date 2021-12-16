@@ -11,6 +11,7 @@ int pokeDef[] = {10, 10, 10, 10};
 type pokeType[] = {ELEK, FEU, EAU, PLANTE};
 
 pokemon initPokemon(map* b, position pos, species e){
+	/* Inits a pokemon with its caracteristics according to its species */
 	pokemon p;
 	int propIndex = e-1;
 	p.name = pokeNames[propIndex];
@@ -27,9 +28,7 @@ pokemon initPokemon(map* b, position pos, species e){
 }
 
 pokedex initPokedex(){
-	/*
-	Init the player's pokedex, with some calloc to have zeroed tables.
-	*/
+	/* Init the player's pokedex, with some calloc to have zeroed tables */
 	pokedex pkdx;
 	pkdx.size = PKDXS;
 	pkdx.existingSpecies = (int*)calloc(pkdx.size, sizeof(int));
@@ -55,7 +54,6 @@ void addPokemons(map* m, pokedex* pkdx, int nbpkm){
 		s = (species)(rand()%4+1);
 		setTab(s, m, x, y);
 		appendPkdx(pkdx, s);
-		// pokemon poke = initPokemon(m, position{x,y}, (species)(rand()%4+1));
 	}
 }
 
