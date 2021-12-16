@@ -27,6 +27,9 @@ pokemon initPokemon(map* b, position pos, species e){
 }
 
 void initPokedex(pokedex* pkdx){
+	/*
+	Init the player's pokedex, with some calloc to have zeroed tables.
+	*/
 	pkdx->size = PKDXS;
 	pkdx->existingSpecies = (int*)calloc(pkdx->size, sizeof(int));
 	pkdx->knownSpecies = (int*)calloc(pkdx->size, sizeof(int));
