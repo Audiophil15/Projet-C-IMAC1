@@ -13,7 +13,7 @@ player initPlayer(string name, map* b, int x, int y){
 	p.pos.y = y;
 	p.pokeballs = 15;
 
-	initPokedex(&(p.pkdx));
+	p.pkdx = initPokedex();
 
 	setTab(JOUEUR, b, p.pos.x, p.pos.y);
 

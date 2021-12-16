@@ -26,19 +26,21 @@ pokemon initPokemon(map* b, position pos, species e){
 	return p;
 }
 
-void initPokedex(pokedex* pkdx){
+pokedex initPokedex(){
 	/*
 	Init the player's pokedex, with some calloc to have zeroed tables.
 	*/
-	pkdx->size = PKDXS;
-	pkdx->existingSpecies = (int*)calloc(pkdx->size, sizeof(int));
-	pkdx->knownSpecies = (int*)calloc(pkdx->size, sizeof(int));
+	pokedex pkdx;
+	pkdx.size = PKDXS;
+	pkdx.existingSpecies = (int*)calloc(pkdx.size, sizeof(int));
+	pkdx.knownSpecies = (int*)calloc(pkdx.size, sizeof(int));
+	return pkdx;
 }
 
 void appendPkdx(pokedex* pkdx, species s){
 	if (pkdx->existingSpecies[s-1] == 0){
 		pkdx->existingSpecies[s-1] = 1;
-		pkdx->size += 1;
+		// pkdx->size += 1;
 	}
 }
 
@@ -55,6 +57,15 @@ void addPokemons(map* m, pokedex* pkdx, int nbpkm){
 		appendPkdx(pkdx, s);
 		// pokemon poke = initPokemon(m, position{x,y}, (species)(rand()%4+1));
 	}
+}
+
+int pokedexFull(pokedex pkdx){
+	for (int i = 0; i < pkdx.size; i++){
+		if (pkdx.knownSpecies[i] != pkdx.existingSpecies[i]){
+			return 0;
+		}
+	}
+	return 1;
 }
 
 int isKnown(species s, pokedex pdx){

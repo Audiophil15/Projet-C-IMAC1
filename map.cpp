@@ -15,7 +15,7 @@ The map game has the x axis downward, the y axis from left to right
 */
 
 // Needs to be updated with the species enum
-char const * displayChar[] = {"#", ".", "P", "S", "C", "B"};
+char const * displayChar[] = {"#", " ", "P", "S", "C", "B"};
 
 int getTab(map b, int x, int y){
 	return b.grid[x*b.width+y];
@@ -45,6 +45,7 @@ void refreshMap(WINDOW* win, map b){
 
 	int bposx = (LINES-b.height+2)/2;
 	int bposy = (COLS-b.width+2)/2;
+	// TEST
 	b.win = derwin(win, b.height+2, b.width+2, bposx, bposy);
 	box(b.win, ACS_VLINE, ACS_HLINE);
 

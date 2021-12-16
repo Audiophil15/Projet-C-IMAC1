@@ -32,9 +32,10 @@ typedef struct pokedex{
 
 
 pokemon initPokemon(map* b, position pos, species e);
-void initPokedex(pokedex*);
+pokedex initPokedex();
 void appendPkdx(pokedex* pkdx, species s);
 void addPokemons(map* m, pokedex* pkdx, int nbpkm);
+int pokedexFull(pokedex pkdx);
 int isKnown(species s, pokedex pdx);
 void learn(species s, pokedex* pdx);
 

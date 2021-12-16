@@ -1,7 +1,7 @@
 all : game
 
 CC=g++
-CCFLAGS=-lncurses
+CCFLAGS=-lncurses -g
 
 game : pokemon.o map.o player.o game.o
 	$(CC) $(CCFLAGS) $^ -o $@
