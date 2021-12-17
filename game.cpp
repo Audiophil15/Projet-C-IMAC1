@@ -24,13 +24,17 @@ int main(){
 	// Init of the sides of the map, then the map itself is initialised and zeroed
 	int mapxsize = 3*LINES/4;
 	int mapysize = 3*COLS/4;
-	map b = initMap(mapxsize, mapysize);
+
+	int nbPokes = 15;
+
+	map b = initMap(mapxsize, mapysize, nbPokes);
 	
 	// Creates a player and puts it in the map
-	player p = initPlayer("Philippe", &b, b.height/2, b.width/2);
+	player p = initPlayer("Philippe", b.height/2, b.width/2);
 
-	// Adds pokemons to the map, updates the pokedex when a new species is created
-	addPokemons(&b, &(p.pkdx), 10);
+	// Adds player and pokemons to the map, updates the pokedex when a new species is created
+	putsPlayer(&b, p);
+	addPokemons(&b, &(p.pkdx), nbPokes);
 
 	// First refresh of the map to see it when starting
 	refreshMap(win, b);

@@ -1,8 +1,7 @@
 #ifndef POKE_H
 #define POKE_H
 
-#include <string>
-#include "map.h"
+#include "position.h"
 
 using namespace std;
 
@@ -31,10 +30,9 @@ typedef struct pokedex{
 
 
 
-pokemon initPokemon(map* b, position pos, species e);
+pokemon initPokemon(position pos, species e);
 pokedex initPokedex();
 void appendPkdx(pokedex* pkdx, species s);
-void addPokemons(map* m, pokedex* pkdx, int nbpkm);
 int pokedexFull(pokedex pkdx);
 int isKnown(species s, pokedex pdx);
 void learn(species s, pokedex* pdx);

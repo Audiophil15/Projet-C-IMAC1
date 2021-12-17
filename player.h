@@ -1,8 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <string>
-#include "map.h"
+#include "position.h"
 #include "pokemon.h"
 
 using namespace std;
@@ -10,13 +9,12 @@ using namespace std;
 #define JOUEUR -1
 
 typedef struct player{
-	string name;
+	char const * name;
 	position pos;
 	int pokeballs;
 	pokedex pkdx;
 } player;
 
-player initPlayer(string name, map*, int, int);
-void movePlayer(player*, map*, char);
+player initPlayer(char const* name,  int, int);
 
 #endif

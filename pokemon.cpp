@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "pokemon.h"
+#include "map.h"
 
 using namespace std;
 
@@ -10,7 +11,7 @@ int pokeAtq[] = {10, 10, 10, 10};
 int pokeDef[] = {10, 10, 10, 10};
 type pokeType[] = {ELEK, FEU, EAU, PLANTE};
 
-pokemon initPokemon(map* b, position pos, species e){
+pokemon initPokemon(position pos, species e){
 	/* Inits a pokemon with its caracteristics according to its species */
 	pokemon p;
 	int propIndex = e-1;
@@ -21,9 +22,6 @@ pokemon initPokemon(map* b, position pos, species e){
 	p.atq = pokeAtq[propIndex];
 	p.def = pokeDef[propIndex];
 	p.t = pokeType[propIndex];
-
-	setTab(e, b, p.pos.x, p.pos.y);
-
 	return p;
 }
 
@@ -40,20 +38,6 @@ void appendPkdx(pokedex* pkdx, species s){
 	if (pkdx->existingSpecies[s-1] == 0){
 		pkdx->existingSpecies[s-1] = 1;
 		// pkdx->size += 1;
-	}
-}
-
-void addPokemons(map* m, pokedex* pkdx, int nbpkm){
-	int x, y;
-	species s;
-	for (int i = 0; i < nbpkm; i++){
-		do{
-			x=rand()%m->height;
-			y=rand()%m->width;
-		} while (getTab(*m, x, y)!=0);
-		s = (species)(rand()%4+1);
-		setTab(s, m, x, y);
-		appendPkdx(pkdx, s);
 	}
 }
 

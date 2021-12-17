@@ -2,6 +2,7 @@
 #include <ncurses.h>
 
 #include "map.h"
+#include "player.h"
 #include "pokemon.h"
 
 using namespace std;
@@ -30,7 +31,7 @@ void setTab(int val, map* b, int x, int y){
 	b->grid[x*b->width+y] = val;
 }
 
-map initMap(int height, int width){
+map initMap(int height, int width, int maxPokemons){
 	/* Initialises the map with given dimensions and fills them with 0s */
 	map b;
 	b.height = height;
@@ -41,6 +42,7 @@ map initMap(int height, int width){
 			setTab(0, &b, i, j);
 		}
 	}
+	b.pokemonList = (pokemon*)malloc(sizeof(pokemon)*maxPokemons);
 	return b;
 }
 
@@ -68,4 +70,63 @@ void refreshMap(WINDOW* win, map b){
 
 	// Refreshes only the subwin, little savings are savings !
 	wrefresh(b.win);
+}
+
+void addPokemons(map* m, pokedex* pkdx, int nbpkm){
+	int x, y;
+	species s;
+	for (int i = 0; i < nbpkm; i++){
+		do{
+			x=rand()%m->height;
+			y=rand()%m->width;
+		} while (getTab(*m, x, y)!=0);
+		s = (species)(rand()%4+1);
+
+		// BUGS HERE
+		m->pokemonList[i] = initPokemon(position{x, y}, s);
+		putsPokemon(m, m->pokemonList[i]);
+		appendPkdx(pkdx, s);
+	}
+}
+
+void putsPlayer(map* m, player p){
+	setTab(JOUEUR, m, p.pos.x, p.pos.y);
+}
+
+void putsPokemon(map* m, pokemon poke){
+	setTab(poke.s, m, poke.pos.x, poke.pos.y);
+}
+
+void movePlayer(player* p, map* b, char direction){
+	int xmv = 0;
+	int ymv = 0;
+	species s;
+	int c;
+
+	if (64 < direction && direction < 69){
+		setTab(0, b, p->pos.x, p->pos.y);
+
+		if (direction == 65 && p->pos.x > 0) {
+			xmv = -1;
+		} else if (direction == 66 && p->pos.x < b->height-1){
+			xmv = 1;
+		} else if (direction == 67 && p->pos.y < b->width-1){
+			ymv = 1;
+		} else if (direction == 68 && p->pos.y > 0){
+			ymv = -1;
+		}
+
+		c = getTab(*b, p->pos.x+xmv, p->pos.y+ymv);
+		if (c!=0) {
+			s = (species)c;
+			if (!isKnown(s, p->pkdx)){
+				learn(s, &(p->pkdx));
+			}
+		}
+
+		p->pos.x += xmv;
+		p->pos.y += ymv;
+
+		setTab(JOUEUR, b, p->pos.x, p->pos.y);
+	}
 }
