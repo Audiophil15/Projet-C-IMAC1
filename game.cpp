@@ -11,7 +11,7 @@ int main(){
 	WINDOW *win, *menu;
 
 	// inits the screen with the whole term as a window
-	win = initscr();
+	win = initscr(); //TEST
 
 	// First refresh allows curs_set() to work
 	refresh();
@@ -37,7 +37,7 @@ int main(){
 	addPokemons(&b, &(p.pkdx), nbPokes);
 
 	// First refresh of the map to see it when starting
-	refreshMap(win, b);
+	refreshMap(win, b); //TEST
 
 	// Will receive the code returned by getch();
 	int c = 0;
@@ -53,8 +53,8 @@ int main(){
 
 		// Move the player if c is the code of an arrow
 		movePlayer(&p, &b, c);
-
-		refreshMap(win, b);
+		movePokemons(&b);
+		refreshMap(win, b); //TEST
 		
 	}
 

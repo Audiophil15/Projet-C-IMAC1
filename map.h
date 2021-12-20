@@ -11,7 +11,8 @@ typedef struct map{
 	int* grid;
 	int width;
 	int height;
-	pokemon* pokemonList;
+	int* pkmlist;
+	int nbpkmn;
 	WINDOW* win;
 } map;
 
@@ -23,5 +24,6 @@ void addPokemons(map* m, pokedex* pkdx, int nbpkm);
 void putsPlayer(map* m, player p);
 void putsPokemon(map* m, pokemon poke);
 void movePlayer(player*, map*, char);
+void movePokemons(map* m);
 
 #endif

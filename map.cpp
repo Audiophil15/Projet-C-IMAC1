@@ -42,7 +42,9 @@ map initMap(int height, int width, int maxPokemons){
 			setTab(0, &b, i, j);
 		}
 	}
-	b.pokemonList = (pokemon*)malloc(sizeof(pokemon)*maxPokemons);
+	b.nbpkmn = maxPokemons;
+	b.pkmlist = (int*)malloc(sizeof(int)*2*maxPokemons);
+	// b.pokemonList = (pokemon*)malloc(sizeof(pokemon)*maxPokemons);
 	return b;
 }
 
@@ -75,6 +77,7 @@ void refreshMap(WINDOW* win, map b){
 void addPokemons(map* m, pokedex* pkdx, int nbpkm){
 	int x, y;
 	species s;
+
 	for (int i = 0; i < nbpkm; i++){
 		do{
 			x=rand()%m->height;
@@ -82,19 +85,16 @@ void addPokemons(map* m, pokedex* pkdx, int nbpkm){
 		} while (getTab(*m, x, y)!=0);
 		s = (species)(rand()%4+1);
 
-		// BUGS HERE
-		m->pokemonList[i] = initPokemon(position{x, y}, s);
-		putsPokemon(m, m->pokemonList[i]);
+		m->pkmlist[i] = x;
+		m->pkmlist[i+1] = y;
+
+		setTab(s, m, x, y);
 		appendPkdx(pkdx, s);
 	}
 }
 
 void putsPlayer(map* m, player p){
 	setTab(JOUEUR, m, p.pos.x, p.pos.y);
-}
-
-void putsPokemon(map* m, pokemon poke){
-	setTab(poke.s, m, poke.pos.x, poke.pos.y);
 }
 
 void movePlayer(player* p, map* b, char direction){
@@ -128,5 +128,25 @@ void movePlayer(player* p, map* b, char direction){
 		p->pos.y += ymv;
 
 		setTab(JOUEUR, b, p->pos.x, p->pos.y);
+	}
+}
+
+void movePokemons(map* m){
+	int x, y;
+	int nx, ny;
+	char msg[150];
+	for (int i = 0; i < m->nbpkmn; i++){
+		x=m->pkmlist[i];
+		y=m->pkmlist[i+1];
+		do{
+			nx = ((x<m->height)*rand()%2 - (x>0)*rand()%2);
+			ny = (nx != 0)*(((y<m->width)*rand()%2)-((y>0)*rand()%2));
+		} while (getTab(*m, x+nx, y+ny)!=0);	
+		setTab(getTab(*m, x, y), m, x+nx, x+ny);
+		setTab(0, m, x, y);
+
+		sprintf(msg, "| %d, %d : %d, %d : %d %d |", x, y, nx, ny, getTab(*m, x, y), getTab(*m, x+nx, y+ny));
+		mvprintw(0, COLS/2, msg);
+
 	}
 }
