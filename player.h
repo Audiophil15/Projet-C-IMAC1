@@ -11,12 +11,14 @@ using namespace std;
 
 typedef struct player{
 	string name;
-	position pos;
+	position_ pos;
 	int pokeballs;
-	pokedex pkdx;
-} player;
+	pokedex_ pokedex;
+	team_ team;
+} player_;
 
-player initPlayer(string name, map*, int, int);
-void movePlayer(player*, map*, char);
+player initPlayer(string name, map_*, int, int);
+int addPokeTeam(player* p, pokemon_ poke);
+void movePlayer(player*, map_*, char);
 
 #endif

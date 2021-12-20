@@ -6,21 +6,35 @@
 
 using namespace std;
 
-player initPlayer(string name, map* b, int x, int y){
+player initPlayer(string name, map_* b, int x, int y){
 	player p;
 	p.name = name;
 	p.pos.x = x;
 	p.pos.y = y;
 	p.pokeballs = 15;
 
-	p.pkdx = initPokedex();
+	p.pokedex = initPokedex();
+	p.team = initTeam();
 
 	setTab(JOUEUR, b, p.pos.x, p.pos.y);
 
 	return p;
 }
 
-void movePlayer(player* p, map* b, char direction){
+int addPokeTeam(player* p, pokemon_ poke){
+	if (p->team.size == p->team.nbpkmn){
+		p->team.size += 1;
+		p->team.pokemons = (pokemon_*)realloc(p->team.pokemons, p->team.size*sizeof(pokemon_));
+	}
+	if (!p->team.pokemons){
+		return -1;
+	}
+	p->team.pokemons[p->team.nbpkmn] = poke;
+	p->team.nbpkmn += 1;
+	return 0;
+}
+
+void movePlayer(player* p, map_* b, char direction){
 	int xmv = 0;
 	int ymv = 0;
 	species s;
@@ -37,14 +51,6 @@ void movePlayer(player* p, map* b, char direction){
 			ymv = 1;
 		} else if (direction == 68 && p->pos.y > 0){
 			ymv = -1;
-		}
-
-		c = getTab(*b, p->pos.x+xmv, p->pos.y+ymv);
-		if (c!=0) {
-			s = (species)c;
-			if (!isKnown(s, p->pkdx)){
-				learn(s, &(p->pkdx));
-			}
 		}
 
 		p->pos.x += xmv;

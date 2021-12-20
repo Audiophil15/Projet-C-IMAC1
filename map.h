@@ -5,21 +5,21 @@
 
 using namespace std;
 
-typedef struct map{
+typedef struct {
 	int* grid;
 	int width;
 	int height;
 	WINDOW* win;
-} map;
+} map_;
 
-typedef struct position{
+typedef struct {
 	int x;
 	int y;
-} position;
+} position_;
 
-int getTab(map, int, int);
-void setTab(int, map*, int, int);
-map initMap(int, int);
-void refreshMap(WINDOW*, map);
+int getTab(map_, int, int);
+void setTab(int, map_*, int, int);
+map_ initMap(int, int);
+void refreshMap(WINDOW*, map_);
 
 #endif

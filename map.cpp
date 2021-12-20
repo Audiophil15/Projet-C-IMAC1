@@ -20,19 +20,19 @@ The map contains -1 for the player, 0 for an empty case, and integers from 1 to 
 // Must to be updated when species enum is changed
 char const * displayChar[] = {"#", " ", "P", "S", "C", "B"};
 
-int getTab(map b, int x, int y){
+int getTab(map_ b, int x, int y){
 	/* map getter of a case's content */
 	return b.grid[x*b.width+y];
 }
 
-void setTab(int val, map* b, int x, int y){
+void setTab(int val, map_* b, int x, int y){
 	/* map setter of a case's content */
 	b->grid[x*b->width+y] = val;
 }
 
-map initMap(int height, int width){
+map_ initMap(int height, int width){
 	/* Initialises the map with given dimensions and fills them with 0s */
-	map b;
+	map_ b;
 	b.height = height;
 	b.width = width;
 	b.grid = (int*)malloc(sizeof(int)*b.width*b.height);
@@ -44,7 +44,7 @@ map initMap(int height, int width){
 	return b;
 }
 
-void refreshMap(WINDOW* win, map b){
+void refreshMap(WINDOW* win, map_ b){
 	/* Refreshes the map display according to what's in the map's grid */
 
 	// -1	0	1	2	...
