@@ -22,9 +22,9 @@ player initPlayer(string name, map_* b, int x, int y){
 }
 
 int addPokeTeam(player* p, pokemon_ poke){
-	if (p->team.size == p->team.nbpkmn){
-		p->team.size += 1;
-		p->team.pokemons = (pokemon_*)realloc(p->team.pokemons, p->team.size*sizeof(pokemon_));
+	if (p->team.sizemax == p->team.nbpkmn){
+		p->team.sizemax += 1;
+		p->team.pokemons = (pokemon_*)realloc(p->team.pokemons, p->team.sizemax*sizeof(pokemon_));
 	}
 	if (!p->team.pokemons){
 		return -1;

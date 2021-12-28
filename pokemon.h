@@ -32,13 +32,13 @@ typedef struct {
 
 typedef struct {
 	pokemon_* pokemons;
-	int size;
+	int sizemax;
 	int nbpkmn;
 }team_;
 
 
 
-pokemon_ initPokemon(map_* b, position_ pos, species e);
+pokemon_ initPokemon(species e);
 pokedex_ initPokedex();
 team_ initTeam();
 void appendPkdx(pokedex_* pkdx, species s);

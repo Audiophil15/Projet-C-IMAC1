@@ -10,20 +10,18 @@ int pokeAtq[] = {10, 10, 10, 10};
 int pokeDef[] = {10, 10, 10, 10};
 type pokeType[] = {ELEK, FEU, EAU, PLANTE};
 
-pokemon_ initPokemon(map_* b, position_ pos, species e){
+pokemon_ initPokemon(species e){
 	/* Inits a pokemon with its caracteristics according to its species */
 	pokemon_ p;
 	int propIndex = e-1;
 	strcpy(p.name,pokeNames[propIndex]);
-	p.pos.x = pos.x;
-	p.pos.y = pos.y;
+	// p.pos.x = pos.x;
+	// p.pos.y = pos.y;
 	p.pvmax = pokePV[propIndex];
 	p.pv = p.pvmax;
 	p.atq = pokeAtq[propIndex];
 	p.def = pokeDef[propIndex];
 	p.t = pokeType[propIndex];
-
-	// setTab(e, b, p.pos.x, p.pos.y);
 
 	return p;
 }
@@ -44,7 +42,7 @@ pokedex_ initPokedex(){
 team_ initTeam(){
 	team_ t;
 	t.pokemons = (pokemon_*)malloc(sizeof(pokemon_));
-	t.size = 1;
+	t.sizemax = 1;
 	t.nbpkmn = 0;
 	return t;
 }

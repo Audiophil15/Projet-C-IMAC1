@@ -45,10 +45,10 @@ map_ initMap(int height, int width){
 }
 
 void refreshMap(WINDOW* win, map_ b){
-	/* Refreshes the map display according to what's in the map's grid */
+	// TODO : Map case is normal or grass, 0 normal or 1 grass
+	//		  Todo after the game works
 
-	// -1	0	1	2	...
-	//  #	.	P	C	...
+	/* Refreshes the map display according to what's in the map's grid */
 
 	// Contain the position x and y of the map box
 	int bposx = (LINES-b.height+2)/2;
