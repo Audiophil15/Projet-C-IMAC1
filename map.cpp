@@ -2,7 +2,6 @@
 #include <ncurses.h>
 
 #include "map.h"
-#include "pokemon.h"
 
 using namespace std;
 
@@ -18,7 +17,7 @@ The map contains -1 for the player, 0 for an empty case, and integers from 1 to 
 */
 
 // Must to be updated when species enum is changed
-char const * displayChar[] = {"#", " ", "P", "S", "C", "B"};
+char const * displayChar[] = {"#", " "};
 
 int getTab(map_ b, int x, int y){
 	/* map getter of a case's content */

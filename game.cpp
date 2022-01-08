@@ -3,7 +3,9 @@
 
 #include "map.h"
 #include "player.h"
+#include "position.h"
 #include "pokemon.h"
+#include "pokedex.h"
 #include "fight.h"
 
 int main(){
@@ -54,8 +56,10 @@ int main(){
 		
 		e = rand()%20;
 		if (!e){
-				
-			fight(win, &p);
+			
+			pokemon_ wild = initPokemon((species)(rand()%PKDXS));
+
+			fight(win, &p, wild);
 			
 			clear();
 		}

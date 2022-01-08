@@ -1,19 +1,24 @@
 #include <iostream>
 #include <ncurses.h>
-#include <time.h>
 #include <unistd.h>
 
 #include "pokemon.h"
-#include "map.h"
+// #include "map.h"
 #include "player.h"
 #include "fight.h"
 
+#define MENULEN 3
+char const * actions[] = {"Attaque", "Capture", "Fuite"};
 
 
-void fight(WINDOW* win, player_* p){
-	WINDOW *fight;
+void fight(WINDOW* win, player_* p, pokemon_ poke){
 	clear();
-	pokemon_ poke = initPokemon((species)(rand()%4+1));
+
+	WINDOW *fight;
+	
+	int menulen;
+	int teamindex = 0;
+	
 	int end = 0;
 
 	while (end != 127){
@@ -41,53 +46,32 @@ void fight(WINDOW* win, player_* p){
 		mvprintw(enemyposx, enemyposy, "%s", poke.name);
 		mvprintw(enemyposx+1, enemyposy, "PV : %d/%d", poke.pv, poke.pvmax);
 
-		int menulen;
-		char * actionsconst[] = {"Attaque", "Capture", "Fuite"};
-		char** actions;
-		int teamindex = 0;
-
-		if (!p->team.nbpkmn){
-			sprintf(ally, "%s", "Vous n'avez pas de Pokemon !");
-			mvprintw(allyposx, allyposy-5, ally);
-			
-			actions = &(actionsconst[1]);
-			menulen = 2;		
+		sprintf(ally, "%s", p->team.pokemons[teamindex]);
+		mvprintw(allyposx, allyposy, ally);
+		mvprintw(allyposx+1, allyposy, "PV : %d/%d", poke.pv, poke.pvmax);
+	
 		
-		} else {
-			sprintf(ally, "%s", p->team.pokemons[teamindex]);
-			mvprintw(allyposx, allyposy, ally);
-			mvprintw(allyposx+1, allyposy, "PV : %d/%d", poke.pv, poke.pvmax);
-		
-			actions = actionsconst;
-			menulen = 3;
-		
-		}
-		
-		end = menu(win, menuposx, menuposy, menusizex, menusizey, actions, menulen);
+		end = menu(win, menuposx, menuposy, menusizex, menusizey);
+		// A changer car non
 
 		wrefresh(fight);
 	}
 }
 
-int menu(WINDOW* win, int posx, int posy, int sx, int sy, char ** actions, int menulength){
+int menu(WINDOW* win, int posx, int posy, int sx, int sy){
 	WINDOW* menu;
 	int selection = 0;
-	int* tabmenuposx = (int*)malloc(sizeof(int)*menulength);
-	for (int i = 0; i < menulength; i++){
-		tabmenuposx[i] = posx+i;
-	}
-	int c = 0;
 
-	char msg[50];
+	int c = 0;
 
 	while(c != 127){
 		menu = derwin(win, sx, sy, posx-2, posy-4);
 		box(menu, ACS_VLINE, ACS_HLINE);
-		for (int i = 0; i < menulength; i++){
-			mvprintw(tabmenuposx[i], posy, actions[i]);
+		for (int i = 0; i < MENULEN; i++){
+			mvprintw(posx+i, posy, actions[i]);
 		}
 		attron(A_REVERSE);
-		mvprintw(tabmenuposx[selection], posy, actions[selection]);
+		mvprintw(posx+selection, posy, actions[selection]);
 		attroff(A_REVERSE);
 		
 		wrefresh(menu);
@@ -95,11 +79,11 @@ int menu(WINDOW* win, int posx, int posy, int sx, int sy, char ** actions, int m
 		c = getch();
 		switch (c){
 			case 65 :	// up
-				selection += -1+(!selection)*menulength;
+				selection += -1+(!selection)*MENULEN;
 				break;
 			case 66 :	// down
 				selection += 1;
-				selection %= menulength;
+				selection %= MENULEN;
 				break;
 			case 9 :
 			case 10 :

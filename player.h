@@ -2,12 +2,19 @@
 #define PLAYER_H
 
 #include <string>
+#include "position.h"
+#include "pokedex.h"
 #include "map.h"
-#include "pokemon.h"
 
 using namespace std;
 
 #define JOUEUR -1
+
+typedef struct {
+	pokemon_* pokemons;
+	int sizemax;
+	int nbpkmn;
+}team_;
 
 typedef struct player{
 	string name;
@@ -18,6 +25,7 @@ typedef struct player{
 } player_;
 
 player initPlayer(string name, map_*, int, int);
+team_ initTeam();
 int addPokeTeam(player* p, pokemon_ poke);
 void movePlayer(player*, map_*, char);
 

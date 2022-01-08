@@ -1,9 +1,9 @@
-all : game
+default : game
 
 CC=g++
 CCFLAGS=-lncurses -g
 
-game : pokemon.o map.o player.o fight.o game.o
+game : pokemon.o map.o player.o fight.o game.o pokedex.o
 	$(CC) $(CCFLAGS) $^ -o $@
 
 game.o : game.cpp
@@ -19,6 +19,9 @@ player.o : player.cpp player.h
 	$(CC) $(CCFLAGS) -c $<
 
 fight.o : fight.cpp fight.h
+	$(CC) $(CCFLAGS) -c $<
+
+pokedex.o : pokedex.cpp pokedex.h
 	$(CC) $(CCFLAGS) -c $<
 
 clean :

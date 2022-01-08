@@ -12,11 +12,6 @@ typedef struct {
 	WINDOW* win;
 } map_;
 
-typedef struct {
-	int x;
-	int y;
-} position_;
-
 int getTab(map_, int, int);
 void setTab(int, map_*, int, int);
 map_ initMap(int, int);

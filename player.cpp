@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
+
 #include "player.h"
 #include "pokemon.h"
+#include "pokedex.h"
 #include "map.h"
 
 using namespace std;
@@ -21,12 +23,20 @@ player initPlayer(string name, map_* b, int x, int y){
 	return p;
 }
 
+team_ initTeam(){
+	team_ t;
+	t.sizemax = 6;
+	t.pokemons = (pokemon_*)malloc(t.sizemax*sizeof(pokemon_));
+	t.nbpkmn = 0;
+	return t;
+}
+
 int addPokeTeam(player* p, pokemon_ poke){
 	if (p->team.sizemax == p->team.nbpkmn){
 		p->team.sizemax += 1;
 		p->team.pokemons = (pokemon_*)realloc(p->team.pokemons, p->team.sizemax*sizeof(pokemon_));
 	}
-	if (!p->team.pokemons){
+	if (p->team.pokemons == NULL){
 		return -1;
 	}
 	p->team.pokemons[p->team.nbpkmn] = poke;
@@ -37,7 +47,6 @@ int addPokeTeam(player* p, pokemon_ poke){
 void movePlayer(player* p, map_* b, char direction){
 	int xmv = 0;
 	int ymv = 0;
-	species s;
 	int c;
 
 	if (64 < direction && direction < 69){
