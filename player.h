@@ -17,16 +17,23 @@ typedef struct {
 }team_;
 
 typedef struct player{
-	string name;
+	char name[25];
 	position_ pos;
 	int pokeballs;
+	int potions;
 	pokedex_ pokedex;
 	team_ team;
 } player_;
 
-player initPlayer(string name, map_*, int, int);
+typedef struct inventaire{
+
+} inventaire_;
+
+player initPlayer(char* name, map_*, int, int);
 team_ initTeam();
+void delTeam(team_);
 int addPokeTeam(player* p, pokemon_ poke);
+int getFirstAliveIndex(player p);
 void movePlayer(player*, map_*, char);
 
 #endif

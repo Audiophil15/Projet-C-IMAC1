@@ -1,7 +1,11 @@
 #ifndef FIGHT_H
 #define FIGHT_H
 
-void fight(WINDOW* win, player_* p, pokemon_ poke);
-int menu(WINDOW* win, int posx, int posy, int sx, int sy);
+#include <ncurses.h>
+#include "pokemon.h"
+
+void fight(WINDOW* win, player_* p, pokemon_* enemy);
+void attack(pokemon_* attacker, pokemon_* defender);
+int isdead(pokemon_ poke);
 
 #endif

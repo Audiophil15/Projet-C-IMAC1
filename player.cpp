@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string>
+#include <cstring>
 
 #include "player.h"
 #include "pokemon.h"
@@ -8,12 +8,14 @@
 
 using namespace std;
 
-player initPlayer(string name, map_* b, int x, int y){
+player initPlayer(char* name, map_* b, int x, int y){
 	player p;
-	p.name = name;
+	strcpy(p.name, name);
+	// p.name = name;
 	p.pos.x = x;
 	p.pos.y = y;
 	p.pokeballs = 15;
+	p.potions = 15;
 
 	p.pokedex = initPokedex();
 	p.team = initTeam();
@@ -31,17 +33,33 @@ team_ initTeam(){
 	return t;
 }
 
+void delTeam(team_ pteam){
+	free(pteam.pokemons);
+}
+
 int addPokeTeam(player* p, pokemon_ poke){
 	if (p->team.sizemax == p->team.nbpkmn){
-		p->team.sizemax += 1;
+		p->team.sizemax *= 2;
 		p->team.pokemons = (pokemon_*)realloc(p->team.pokemons, p->team.sizemax*sizeof(pokemon_));
 	}
 	if (p->team.pokemons == NULL){
 		return -1;
 	}
+	if (!isKnown(poke.s, p->pokedex)){
+		learn(poke.s, &(p->pokedex));
+	}
 	p->team.pokemons[p->team.nbpkmn] = poke;
 	p->team.nbpkmn += 1;
 	return 0;
+}
+
+int getFirstAliveIndex(player p){
+	for (int i = 0; i < p.team.nbpkmn; i++){
+		if (p.team.pokemons[i].pv > 0){
+			return i;
+		}
+	}
+	return -1;
 }
 
 void movePlayer(player* p, map_* b, char direction){

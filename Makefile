@@ -2,27 +2,21 @@ default : game
 
 CC=g++
 CCFLAGS=-lncurses -g
+OFLAGS= $(CCFLAGS) -MMD
+SRC = game.cpp map.cpp player.cpp pokemon.cpp pokedex.cpp fight.cpp ui.cpp
 
-game : pokemon.o map.o player.o fight.o game.o pokedex.o
+#game : pokemon.o map.o player.o fight.o game.o pokedex.o
+game : $(SRC:%.cpp=%.o)
 	$(CC) $(CCFLAGS) $^ -o $@
 
 game.o : game.cpp
-	$(CC) $(CCFLAGS) -c $<
+	$(CC) $(OFLAGS) -c $<
 
-pokemon.o : pokemon.cpp pokemon.h
-	$(CC) $(CCFLAGS) -c $<
-
-map.o : map.cpp map.h
-	$(CC) $(CCFLAGS) -c $<
-
-player.o : player.cpp player.h
-	$(CC) $(CCFLAGS) -c $<
-
-fight.o : fight.cpp fight.h
-	$(CC) $(CCFLAGS) -c $<
-
-pokedex.o : pokedex.cpp pokedex.h
-	$(CC) $(CCFLAGS) -c $<
+%.o : %.cpp %.h
+	$(CC) $(OFLAGS) -c $<
 
 clean :
 	rm *.o
+	rm *.d
+
+-include $(SRC:%.cpp=%.d)

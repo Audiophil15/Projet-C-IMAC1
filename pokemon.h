@@ -11,7 +11,6 @@ typedef enum species {PIKACHU, SALAMECHE, CARAPUCE, BULBIZARRE} species;
 
 typedef struct {
 	char name[50];
-	position_ pos;
 	int pvmax;
 	int pv;
 	int atq;

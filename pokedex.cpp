@@ -27,9 +27,9 @@ int pokedexFull(pokedex_ pkdx){
 }
 
 int isKnown(species s, pokedex_ pdx){
-	return pdx.knownSpecies[s-1]==1;
+	return pdx.knownSpecies[s]==1;
 }
 
 void learn(species s, pokedex_* pdx){
-	pdx->knownSpecies[s-1]=1;
+	pdx->knownSpecies[s]=1;
 }

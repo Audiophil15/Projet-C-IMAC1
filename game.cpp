@@ -3,10 +3,10 @@
 
 #include "map.h"
 #include "player.h"
-#include "position.h"
 #include "pokemon.h"
 #include "pokedex.h"
 #include "fight.h"
+#include "ui.h"
 
 int main(){
 
@@ -30,7 +30,7 @@ int main(){
 	map_ b = initMap(mapxsize, mapysize);
 	
 	// Creates a player and puts it in the map
-	player_ p = initPlayer("Philippe", &b, b.height/2, b.width/2);
+	player_ p = initPlayer((char*)"Philippe", &b, b.height/2, b.width/2);
 	addPokeTeam(&p, initPokemon(PIKACHU));
 
 	// First refresh of the map to see it when starting
@@ -54,18 +54,36 @@ int main(){
 		// Move the player if c is the code of an arrow
 		movePlayer(&p, &b, c);
 		
-		e = rand()%20;
-		if (!e){
-			
-			pokemon_ wild = initPokemon((species)(rand()%PKDXS));
-
-			fight(win, &p, wild);
-			
-			clear();
-		}
 		refreshMap(win, b);
-		
+
+		if (c==112){
+			char nana[2];
+			int pmenusx = LINES/2;
+			int pmenusy = COLS/3;
+			int pmenuposx = LINES/4;
+			int pmenuposy = COLS/3;
+			WINDOW* pausemenu = derwin(win, pmenusx, pmenusy, pmenuposx, pmenuposy);
+			wclear(win);
+			for (int i = 0; i < p.pokedex.size; i++){
+				sprintf(nana, "%d", p.pokedex.knownSpecies[i]);
+				mvprintw(pmenuposx, pmenuposy+i, nana);
+			}
+			wrefresh(win);
+			getch();
+		} else {
+			e = rand()%20;
+			if (!e){
+				pokemon_ wild = initPokemon((species)(rand()%PKDXS));
+				fight(win, &p, &wild);
+				clear();
+				refreshMap(win, b);
+				
+			}
+		}
 	}
+
+	delMap(b);
+	delTeam(p.team);
 
 	// Closes ncurses
 	endwin();

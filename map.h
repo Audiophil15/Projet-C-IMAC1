@@ -15,6 +15,7 @@ typedef struct {
 int getTab(map_, int, int);
 void setTab(int, map_*, int, int);
 map_ initMap(int, int);
+void delMap(map_);
 void refreshMap(WINDOW*, map_);
 
 #endif

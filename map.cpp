@@ -43,6 +43,10 @@ map_ initMap(int height, int width){
 	return b;
 }
 
+void delMap(map_ map){
+	free(map.grid);
+}
+
 void refreshMap(WINDOW* win, map_ b){
 	// TODO : Map case is normal or grass, 0 normal or 1 grass
 	//		  Todo after the game works
