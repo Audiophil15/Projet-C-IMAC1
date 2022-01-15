@@ -2,33 +2,26 @@
 
 #include "ui.h"
 #include "pokemon.h"
+#include "player.h"
 
-typedef struct {
-	WINDOW* w;
-	int wposx;
-	int wposy;
-	int wsx;
-	int wsy;
-} window_;
-
-int menulist(WINDOW* menu, int posx, int posy, int sx, int sy, char const** choices, int menulength){
-	// WINDOW* menu;
-	// menu = derwin(win, sx, sy, posx-2, posy-4);
-	wclear(menu);
-	box(menu, ACS_VLINE, ACS_HLINE);
+int menulist(window_ wmenu, char ** choices, int menulength, int wcl){
+	if(wcl){
+		wclear(wmenu.w);
+		box(wmenu.w, ACS_VLINE, ACS_HLINE);
+	}
 
 	int selection = 0;
 	int c = 0;
 
 	while(c != 127){ //while true
 		for (int i = 0; i < menulength; i++){
-			mvprintw(posx+i, posy, choices[i]);
+			mvprintw(wmenu.posx+i, wmenu.posy, choices[i]);
 		}
 		attron(A_REVERSE);
-		mvprintw(posx+selection, posy, choices[selection]);
+		mvprintw(wmenu.posx+selection, wmenu.posy, choices[selection]);
 		attroff(A_REVERSE);
 		
-		wrefresh(menu);
+		wrefresh(wmenu.w);
 		// wrefresh(win);
 				
 		c = getch();
@@ -55,15 +48,39 @@ int menulist(WINDOW* menu, int posx, int posy, int sx, int sy, char const** choi
 	return 127;
 }
 
-// void msgbox(WINDOW* msgbox, int posx, int posy, int sx, int sy, char const* msg){
-void msgbox(WINDOW* msgbox, int posx, int posy, char const* msg){
-	// WINDOW* msgbox;
-	// msgbox = derwin(win, sx, sy, posx-2, posy-4);
-	wclear(msgbox);
-	box(msgbox, ACS_VLINE, ACS_HLINE);
+int pokemonlist(window_ wmenu, player_ p){
+	char* pokenames[p.team.nbpkmn];
+	char pv[6];
+	pokemon_ poke;
+	wempty(wmenu);
+	for (int i = 0; i < p.team.nbpkmn; i++){
+		poke = p.team.pokemons[i];
+		pokenames[i] = poke.name;
+		sprintf(pv, "%d/%d", poke.pv, poke.pvmax);
+		msgbox(wmenu, pv, i, 22, 0);
+	}
+	
+	int choix=0;
+	do{
+		choix = menulist(wmenu, pokenames, p.team.nbpkmn, 0);
+	} while (p.team.pokemons[choix].pv==0);
 
-	mvprintw(posx, posy, msg);
-	wrefresh(msgbox);
+	return choix;
+}
+
+void wempty(window_ w){
+	wclear(w.w);
+	box(w.w, ACS_VLINE, ACS_HLINE);
+}
+
+void msgbox(window_ wmsgbox, char const* msg, int offsetx, int offsety, int wcl){
+	if (wcl){
+		wempty(wmsgbox);
+	}
+	
+
+	mvprintw(wmsgbox.posx+offsetx, wmsgbox.posy+offsety, msg);
+	wrefresh(wmsgbox.w);
 }
 
 void pkmnInfoDisplay(int posx, int posy, pokemon_ poke){
@@ -77,6 +94,4 @@ void pkmnInfoDisplay(int posx, int posy, pokemon_ poke){
 	mvprintw(posx, posy, "%s", poke.name);
 	mvprintw(posx+1, posy, "PV : %2d/%2d", poke.pv, poke.pvmax);
 	mvprintw(posx+2, posy, "   : %s", pv);
-
-	// mvprintw(posx+2, posy, "ATQ : %2d / DEF : %2d", poke.atq, poke.def);
 }

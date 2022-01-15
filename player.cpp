@@ -41,15 +41,18 @@ int addPokeTeam(player* p, pokemon_ poke){
 	if (p->team.sizemax == p->team.nbpkmn){
 		p->team.sizemax *= 2;
 		p->team.pokemons = (pokemon_*)realloc(p->team.pokemons, p->team.sizemax*sizeof(pokemon_));
+		return 1;
+	} else {
+
+		// if (p->team.pokemons == NULL){
+		// 	return -1;
+		// }
+		// if (!isKnown(poke.s, p->pokedex)){
+		// 	learn(poke.s, &(p->pokedex));
+		// }
+		p->team.pokemons[p->team.nbpkmn] = poke;
+		p->team.nbpkmn += 1;
 	}
-	if (p->team.pokemons == NULL){
-		return -1;
-	}
-	if (!isKnown(poke.s, p->pokedex)){
-		learn(poke.s, &(p->pokedex));
-	}
-	p->team.pokemons[p->team.nbpkmn] = poke;
-	p->team.nbpkmn += 1;
 	return 0;
 }
 

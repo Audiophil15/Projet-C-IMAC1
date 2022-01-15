@@ -33,6 +33,9 @@ int main(){
 	player_ p = initPlayer((char*)"Philippe", &b, b.height/2, b.width/2);
 	addPokeTeam(&p, initPokemon(PIKACHU));
 
+	addPokeTeam(&p, initPokemon(BULBIZARRE));
+
+
 	// First refresh of the map to see it when starting
 	refreshMap(win, b);
 
