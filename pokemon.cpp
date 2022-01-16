@@ -13,7 +13,7 @@ type pokeType[] = {ELEK, FEU, EAU, PLANTE};
 pokemon_ initPokemon(species s){
 	/* Inits a pokemon with its caracteristics according to its species */
 	pokemon_ p;
-	strcpy(p.name,pokeNames[s]);
+	p.name = pokeNames[s];
 	p.pvmax = pokePV[s];
 	p.pv = p.pvmax;
 	p.atq = pokeAtq[s];

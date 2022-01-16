@@ -10,7 +10,7 @@ typedef enum type {ELEK, FEU, EAU, PLANTE} type;
 typedef enum species {PIKACHU, SALAMECHE, CARAPUCE, BULBIZARRE} species;
 
 typedef struct {
-	char name[50];
+	char const * name;
 	int pvmax;
 	int pv;
 	int atq;

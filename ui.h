@@ -14,7 +14,7 @@ typedef struct {
 } window_;
 
 void wempty(window_ w);
-int menulist(window_ wmenu, char ** choices, int menulength, int wcl=1);
+int menulist(window_ wmenu, char const ** choices, int menulength, int wcl=1);
 int pokemonlist(window_ wmenu, player_ p);
 void msgbox(window_ wmsgbox, char const* msg, int offx = 0, int offy = 0, int wcl = 1);
 void pkmnInfoDisplay(int posx, int posy, pokemon_ poke);

@@ -31,10 +31,8 @@ int main(){
 	
 	// Creates a player and puts it in the map
 	player_ p = initPlayer((char*)"Philippe", &b, b.height/2, b.width/2);
+
 	addPokeTeam(&p, initPokemon(PIKACHU));
-
-	addPokeTeam(&p, initPokemon(BULBIZARRE));
-
 
 	// First refresh of the map to see it when starting
 	refreshMap(win, b);
@@ -46,7 +44,7 @@ int main(){
 	int e;
 
 	// Beginning of the game, stop when all species have been encountered, or when Backspace is hit
-	while (!pokedexFull(p.pokedex) && c!=127){
+	while (!pokedexFull(p.pokedex) && c!=120){
 		c = getch();
 		
 		// 410 is the "screen resize" code

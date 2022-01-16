@@ -36,24 +36,27 @@ void fight(WINDOW* win, player_* p, pokemon_* enemy){
 	wmenu.w = derwin(win, wmenu.sx, wmenu.sy, wmenu.posx-2, wmenu.posy-4);
 	box(wfight.w, ACS_VLINE, ACS_HLINE);
 
-	char * actions[] = {"Attaque", "Pokemon", "Capture", "Potion", "Fuite"};
+	char const * actions[] = {"Attaque", "Pokemon", "Capture", "Potion", "Fuite"};
 	int menulen = 5;
-	int teamindex = 0;
-	int choice; 0;
+	int tmpindex, teamindex = 0;
+	int blockenemy;	// Allows to block the enemy's attack when quitting the "change pokemon" menu without changing
+	int choice;
 	char msg [100];
 	pokemon_ * ally = &(p->team.pokemons[teamindex]);
 
 	// end = 1 : victory; end = 2 : defeat; end = 3 : flee
 	int end=0;
-	while (end == 0 && choice != 127){
+	while (end == 0 && choice != 120){ //DEBUG
 
+		blockenemy = 0;
 		// box(fight, ACS_VLINE, ACS_HLINE);
 
 		pkmnInfoDisplay(enemyposx, enemyposy, *enemy);
 		pkmnInfoDisplay(allyposx, allyposy, *ally);	
 		
-		choice = menulist(wmenu, actions, menulen);
-
+		do{
+			choice = menulist(wmenu, actions, menulen);
+		}while(choice==-1);
 
 		switch (choice){
 			case 0:
@@ -73,37 +76,43 @@ void fight(WINDOW* win, player_* p, pokemon_* enemy){
 				break;
 			case 1:
 				// Changer de pokemon
-				teamindex = pokemonlist(wmenu, *p);
-				ally = &(p->team.pokemons[teamindex]);
+				tmpindex = pokemonlist(wmenu, *p);
+				if (tmpindex != -1){ // If the user doesn't quit the menu, updates the pokemon index in the team
+					teamindex = tmpindex;
+					ally = &(p->team.pokemons[teamindex]);
+				} else {
+					blockenemy = 1;
+				}
 				break;
 	
 			case 2:
 				// Capture
-				p->pokeballs -= 1;
-				if (1){
-				// if (!(rand()%4)){
-					end = 2;
-					learn(enemy->s, &(p->pokedex));
-					if (!addPokeTeam(p, *enemy)){
-						sprintf(msg, "%s a ete capture !", enemy->name);
-						msgbox(wmenu, msg);
+				if (p->pokeballs){
+					p->pokeballs -= 1;
+					if (1){
+					// if (!(rand()%4)){ //DEBUG
+						end = 2;
+						learn(enemy->s, &(p->pokedex));
+						if (!addPokeTeam(p, *enemy)){
+							sprintf(msg, "%s a ete capture !", enemy->name);
+							msgbox(wmenu, msg);
+						} else {
+							sprintf(msg, "%s a ete capture !", enemy->name);
+							msgbox(wmenu, msg);
+							msgbox(wmenu, "L'equipe est pleine, il a ete envoye", 1, 0, 0);
+							msgbox(wmenu, "sur votre PC.", 2, 0, 0);
+						}
+						// sleep(1); // REMETTRE
 					} else {
-						sprintf(msg, "%s a ete capture !", enemy->name);
-						msgbox(wmenu, msg);
-						msgbox(wmenu, "L'equipe est pleine, il a ete envoye", 1, 0, 0);
-						msgbox(wmenu, "sur votre PC.", 2, 0, 0);
+						msgbox(wmenu, "Capture ratee !");
+						// sleep(1); // REMETTRE
 					}
-					// sleep(1); // REMETTRE
-				} else {
-					msgbox(wmenu, "Capture ratee !");
-					// sleep(1); // REMETTRE
 				}
-				getch();
 				break;
 
 			case 3:
 				// Potion
-				if (p->potions>0){
+				if (p->potions){
 					p->potions -= 1;
 					sprintf(msg, "%s utilise une potion !", p->name);
 					msgbox(wmenu, msg);
@@ -134,7 +143,7 @@ void fight(WINDOW* win, player_* p, pokemon_* enemy){
 				break;
 		}
 
-		if (end == 0){
+		if (end == 0 && !blockenemy){
 			sprintf(msg, "%s sauvage attaque !", enemy->name);
 			msgbox(wmenu, msg);
 			// sleep(1); // REMETTRE

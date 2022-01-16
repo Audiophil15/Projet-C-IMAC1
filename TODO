@@ -1,5 +1,33 @@
--- CREER DES STRUCT POUR LES FENETRES
-Creer menu intro du jeu
-Actions quand pokemon allie meurt : Changer de pokemon, perdre ?
+_________________________
+Syntaxe  :
+	Indiquer dans l'ordre de priorite suivant :
+	# : Probleme, bug empechant le bon fonctionnement du programme
+	$ : Ajout de fonctionnalites, modifications de fonctionnalites existantes, modifications touchant a l'algorithme du programme
+	~ : Ajouts bonus, esthetiques, modifications legeres
+
+	Ajouter un  :
+		'o' (ex : $o) indique une optimisation de memoire, de vitesse, de lisibiliste...
+		'+' (ex : $+) indique la resolution d'un probleme ou l'ajout fini d'une fonctionnalite annoncee dans un point precedent. On peut ajouter le nom du (des) fichier(s) qui ont ete modifies.
+
+	Les corrections ou changements effectues sont indiques dans une section avant ceux a faire.
+
+	Apres les notes codees sont ecrits les differents commentaires.
+_________________________
+
+14/01 :
+$o	: CREER DES STRUCT POUR LES FENETRES
+\
+
+15/01 :
+$o+	: CREER DES STRUCT POUR LES FENETRES (ui.cpp)
+
+$	: Ajouter actions quand pokemon allie meurt : Changer de pokemon, perdre ?
+$	: Creer menu intro du jeu
+$	: Creer menu outro du jeu
+$	: Mettre des 1 dans la map pour afficher des hautes herbes, gerer le passage du joueur en consequence
+$o	: Ne pas reafficher toute la map a chaque fois, deplacer seulement le caractere du joueur ?
+
+Modification de tous les tableaux de noms de pokemons en "char const**" pour plaire au C++ qui casse les pieds avec ses string.
+\
 
 FREEEEEEEEEEEEEEEE
