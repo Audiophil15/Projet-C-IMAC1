@@ -11,13 +11,8 @@ pokedex_ initPokedex(){
 	return pkdx;
 }
 
-void appendPkdx(pokedex_* pkdx, species s){
-	if (pkdx->knownSpecies[s-1] == 0){
-		pkdx->knownSpecies[s-1] = 1;
-	}
-}
-
 int pokedexFull(pokedex_ pkdx){
+	/* 1 if pokedex is full, 0 otherwise */
 	for (int i = 0; i < pkdx.size; i++){
 		if (pkdx.knownSpecies[i] == 0){
 			return 0;

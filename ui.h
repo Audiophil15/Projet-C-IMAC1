@@ -13,6 +13,7 @@ typedef struct {
 	int sy;
 } window_;
 
+window_ initWindow(int sx, int sy, int posx, int posy);
 void wempty(window_ w);
 int menulist(window_ wmenu, char const ** choices, int menulength, int wcl=1);
 int pokemonlist(window_ wmenu, player_ p);

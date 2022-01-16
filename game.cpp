@@ -32,6 +32,7 @@ int main(){
 	// Creates a player and puts it in the map
 	player_ p = initPlayer((char*)"Philippe", &b, b.height/2, b.width/2);
 
+	// Adds the first pokemon to the player's team
 	addPokeTeam(&p, initPokemon(PIKACHU));
 
 	// First refresh of the map to see it when starting
@@ -42,8 +43,10 @@ int main(){
 
 	// encounter ?
 	int e;
+	// encounter prbability
+	int ep = 20;
 
-	// Beginning of the game, stop when all species have been encountered, or when Backspace is hit
+	// Beginning of the game, stops when all species have been encountered, or when X is hit
 	while (!pokedexFull(p.pokedex) && c!=120){
 		c = getch();
 		
@@ -52,11 +55,13 @@ int main(){
 			clear();
 		}
 
-		// Move the player if c is the code of an arrow
+		// Moves the player if c is the code of an arrow
 		movePlayer(&p, &b, c);
 		
 		refreshMap(win, b);
 
+		// DEBUG
+		// Shows pokedex on screen
 		if (c==112){
 			char nana[2];
 			int pmenusx = LINES/2;
@@ -71,18 +76,20 @@ int main(){
 			}
 			wrefresh(win);
 			getch();
+		
 		} else {
-			e = rand()%20;
+			// Approx. one chance in ep of triggering an encounter
+			e = rand()%ep;
 			if (!e){
 				pokemon_ wild = initPokemon((species)(rand()%PKDXS));
 				fight(win, &p, &wild);
 				clear();
 				refreshMap(win, b);
-				
 			}
 		}
 	}
 
+	// Free allocated memory
 	delMap(b);
 	delTeam(p.team);
 

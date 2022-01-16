@@ -10,39 +10,34 @@
 void fight(WINDOW* win, player_* p, pokemon_* enemy){
 	clear();
 
-	window_ wfight;
-	wfight.sx = min(COLS, LINES)/2;
-	wfight.sy = wfight.sx*3;
-	wfight.posx = (LINES-wfight.sx)/2;
-	wfight.posy = (COLS-wfight.sy)/2;
+	// Init of the winodws that will show the fight interface and the menus/messages respectively
+	window_ wfight = initWindow(min(COLS, LINES)/2, wfight.sx*3, (LINES-wfight.sx)/2, (COLS-wfight.sy)/2);
+	window_ wmenu = initWindow(wfight.sx/2-4, wfight.sy-6, wfight.posx+wfight.sx/2+4, wfight.posy+7);
+	wfight.w = derwin(win, wfight.sx+2, wfight.sy+2, wfight.posx-1, wfight.posy-1);
+	wmenu.w = derwin(win, wmenu.sx, wmenu.sy, wmenu.posx-2, wmenu.posy-4);
+	box(wfight.w, ACS_VLINE, ACS_HLINE);
 	
-	window_ wmenu;
-	wmenu.sx = wfight.sx/2-4;
-	wmenu.sy = wfight.sy-6;
-	wmenu.posx = wfight.posx+wfight.sx/2+4;
-	wmenu.posy = wfight.posy+7;
-	
+	// Position of the ally and enemy's info
 	int enemyposx;
 	int enemyposy;
 	int allyposx;
 	int allyposy;
 
+	// Up Left Corner
 	enemyposx = wfight.posx+1;
 	enemyposy = wfight.posy+10;
+	// Bottom Right
 	allyposx = wfight.posx+wfight.sx/2-2;
 	allyposy = wfight.posy+3*wfight.sy/4-5;
 
-	wfight.w = derwin(win, wfight.sx+2, wfight.sy+2, wfight.posx-1, wfight.posy-1);
-	wmenu.w = derwin(win, wmenu.sx, wmenu.sy, wmenu.posx-2, wmenu.posy-4);
-	box(wfight.w, ACS_VLINE, ACS_HLINE);
 
 	char const * actions[] = {"Attaque", "Pokemon", "Capture", "Potion", "Fuite"};
 	int menulen = 5;
 	int tmpindex, teamindex = 0;
 	int blockenemy;	// Allows to block the enemy's attack when quitting the "change pokemon" menu without changing
-	int choice;
-	char msg [100];
-	pokemon_ * ally = &(p->team.pokemons[teamindex]);
+	int choice;		// What action is chosen
+	char msg [100];	// Used to print message
+	pokemon_ * ally = &(p->team.pokemons[teamindex]); // Just a shortcut to avoid to many memory access
 
 	// end = 1 : victory; end = 2 : defeat; end = 3 : flee
 	int end=0;
@@ -165,11 +160,12 @@ void fight(WINDOW* win, player_* p, pokemon_* enemy){
 }
 
 
-
 void attack(pokemon_* attacker, pokemon_* defender){
+	/* He doesn't protec but... he attak */
 	defender->pv = max(0, defender->pv-max(attacker->atq-defender->def, 0));
 }
 
 int isdead(pokemon_ poke){
+	/*So sad (?)*/
 	return poke.pv==0;
 }

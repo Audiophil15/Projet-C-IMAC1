@@ -9,6 +9,8 @@
 using namespace std;
 
 player initPlayer(char* name, map_* b, int x, int y){
+	/* Allocates memory and sets the struct's variables */
+
 	player p;
 	strcpy(p.name, name);
 	// p.name = name;
@@ -26,6 +28,7 @@ player initPlayer(char* name, map_* b, int x, int y){
 }
 
 team_ initTeam(){
+	/* Allocates memory and sets the struct's variables */
 	team_ t;
 	t.sizemax = 6;
 	t.pokemons = (pokemon_*)malloc(t.sizemax*sizeof(pokemon_));
@@ -34,10 +37,12 @@ team_ initTeam(){
 }
 
 void delTeam(team_ pteam){
+	/* Free allocated memory */
 	free(pteam.pokemons);
 }
 
 int addPokeTeam(player* p, pokemon_ poke){
+	/* Adds a pokemon to the team if it contains less than 6 pokemons */
 	if (p->team.sizemax == p->team.nbpkmn){
 		p->team.sizemax *= 2;
 		p->team.pokemons = (pokemon_*)realloc(p->team.pokemons, p->team.sizemax*sizeof(pokemon_));
@@ -57,6 +62,7 @@ int addPokeTeam(player* p, pokemon_ poke){
 }
 
 int getFirstAliveIndex(player p){
+	/* unused I think. Returns the index of the first alive pokemon in the team. */
 	for (int i = 0; i < p.team.nbpkmn; i++){
 		if (p.team.pokemons[i].pv > 0){
 			return i;
@@ -66,6 +72,7 @@ int getFirstAliveIndex(player p){
 }
 
 void movePlayer(player* p, map_* b, char direction){
+	/* Moves the player and updates the printout */
 	int xmv = 0;
 	int ymv = 0;
 	int c;

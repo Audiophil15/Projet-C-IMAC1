@@ -1,3 +1,4 @@
+"""
 _________________________
 Syntaxe  :
 	Indiquer dans l'ordre de priorite suivant :
@@ -30,4 +31,9 @@ $o	: Ne pas reafficher toute la map a chaque fois, deplacer seulement le caracte
 Modification de tous les tableaux de noms de pokemons en "char const**" pour plaire au C++ qui casse les pieds avec ses string.
 \
 
+16/01 :
+~	: Ajouter ASCII Art
+
 FREEEEEEEEEEEEEEEE
+
+"""

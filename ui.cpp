@@ -4,7 +4,20 @@
 #include "pokemon.h"
 #include "player.h"
 
+window_ initWindow(int sx, int sy, int posx, int posy){
+	/* Inits a window_ with the corresponding sizes and position */
+	window_ win;
+	win.sx = sx;
+	win.sy = sy;
+	win.posx = posx;
+	win.posy = posy;
+	return win;
+}
+
 int menulist(window_ wmenu, char const ** choices, int menulength, int wcl){
+	/* Creates a menu based on the choices and menulength given */
+
+	// Clears the window if needed (default yes)
 	if(wcl){
 		wclear(wmenu.w);
 		box(wmenu.w, ACS_VLINE, ACS_HLINE);
@@ -14,6 +27,7 @@ int menulist(window_ wmenu, char const ** choices, int menulength, int wcl){
 	int c = 0;
 
 	while(c != 120){ //while true
+		// prints all the choices, then prints the selected choice with reverse attribute
 		for (int i = 0; i < menulength; i++){
 			mvprintw(wmenu.posx+i, wmenu.posy, choices[i]);
 		}
@@ -54,12 +68,11 @@ int menulist(window_ wmenu, char const ** choices, int menulength, int wcl){
 }
 
 int pokemonlist(window_ wmenu, player_ p){
+	/* Creates a menu with pokemons */
 	char const * pokenames[6];
 	char pv[6];
 	int choix=0;
 	pokemon_ poke;
-	
-	char msg[50]; //DEBUG
 
 	wempty(wmenu);
 	for (int i = 0; i < p.team.nbpkmn; i++){
@@ -77,21 +90,22 @@ int pokemonlist(window_ wmenu, player_ p){
 }
 
 void wempty(window_ w){
+	/* Clears a window */
 	wclear(w.w);
 	box(w.w, ACS_VLINE, ACS_HLINE);
 }
 
 void msgbox(window_ wmsgbox, char const* msg, int offsetx, int offsety, int wcl){
+	/* Prints a message in a box, clears it if needed */
 	if (wcl){
 		wempty(wmsgbox);
 	}
-	
-
 	mvprintw(wmsgbox.posx+offsetx, wmsgbox.posy+offsety, msg);
 	wrefresh(wmsgbox.w);
 }
 
 void pkmnInfoDisplay(int posx, int posy, pokemon_ poke){
+	/* Shows a pokemon info at given position. Shows name and pv stats with a healthbar */
 	float hbar;
 	float hbarmax = 19;
 	char pv[21] = "                    ";
