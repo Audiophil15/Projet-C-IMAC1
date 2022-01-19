@@ -73,12 +73,12 @@ int getFirstAliveIndex(player p){
 
 void movePlayer(player* p, map_* b, char direction){
 	/* Moves the player and updates the printout */
+	static int c;
 	int xmv = 0;
 	int ymv = 0;
-	int c;
 
 	if (64 < direction && direction < 69){
-		setTab(0, b, p->pos.x, p->pos.y);
+		setTab(c, b, p->pos.x, p->pos.y);		// Restores the initial ground under the player
 
 		if (direction == 65 && p->pos.x > 0) {
 			xmv = -1;
@@ -93,6 +93,8 @@ void movePlayer(player* p, map_* b, char direction){
 		p->pos.x += xmv;
 		p->pos.y += ymv;
 
-		setTab(JOUEUR, b, p->pos.x, p->pos.y);
+		c = getTab(*b, p->pos.x, p->pos.y);		// Saves what kind of ground it is before player steps on it
+		setTab(JOUEUR, b, p->pos.x, p->pos.y);	// Puts the player in the new place he reached
 	}
 }
+

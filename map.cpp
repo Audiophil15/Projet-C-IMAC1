@@ -17,7 +17,7 @@ The map contains -1 for the player, 0 for an empty case, and integers from 1 to 
 */
 
 // Must to be updated when species enum is changed
-char const * displayChar[] = {"#", " "};
+char const * displayChar[] = {"#", " ", "X"};
 
 int getTab(map_ b, int x, int y){
 	/* map getter of a case's content */
@@ -37,7 +37,11 @@ map_ initMap(int height, int width){
 	b.grid = (int*)malloc(sizeof(int)*b.width*b.height);
 	for (int i = 0; i < b.height; i++){
 		for (int j = 0; j < b.width; j++){
-			setTab(0, &b, i, j);
+			if (i>2 && i>6 && j>4 && j<9){
+				setTab(1, &b, i, j);
+			} else {
+				setTab(0, &b, i, j);
+			}
 		}
 	}
 	return b;
