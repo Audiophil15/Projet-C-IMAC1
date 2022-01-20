@@ -5,7 +5,7 @@
 #include "pokemon.h"
 #include "ui.h"
 
-void fight(WINDOW* win, player_* p, pokemon_* enemy);
+void fight(window_ win, player_* p, pokemon_* enemy);
 void attack(pokemon_* attacker, pokemon_* defender);
 int isdead(pokemon_ poke);
 int changePokemon(window_ wmenu, player* p, pokemon_** ally);

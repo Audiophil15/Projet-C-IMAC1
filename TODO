@@ -17,7 +17,7 @@ _________________________
 
 14/01 :
 $o	: CREER DES STRUCT POUR LES FENETRES
-\
+\_
 
 15/01 :
 $o+	: CREER DES STRUCT POUR LES FENETRES (ui.cpp)
@@ -29,10 +29,31 @@ $	: Mettre des 1 dans la map pour afficher des hautes herbes, gerer le passage d
 $o	: Ne pas reafficher toute la map a chaque fois, deplacer seulement le caractere du joueur ?
 
 Modification de tous les tableaux de noms de pokemons en "char const**" pour plaire au C++ qui casse les pieds avec ses string.
-\
+\_
 
 16/01 :
 ~	: Ajouter ASCII Art
+\_
+
+19/01 :
+$+	: Ajouter actions quand pokemon allie meurt : Changer de pokemon, perdre ?
+$+	: Mettre des 1 dans la map pour afficher des hautes herbes, gerer le passage du joueur en consequence
+
+$	: Ajouter un inventaire affichant le nombre d'objets restant
+$	: Ajouter un pokedex indiquant quels pokemons ont ete captures
+$	: Ajouter un raccourci pour un menu affichant les regles et le pokedex
+$	: Possibilite de restock en potions/pokeballs ?
+$	: Generer un remplissage de la map avec des zones aleatoires de hautes herbes, sous forme de carres calcules automatiquement
+~	: Nombre de Pokeballs/Potions en fonction de la taille de la map ?
+~	: Ajouter le splash screen
+~	: Ajouter des couleurs/Ascii art
+~	: Ameliorer ending screen
+
+Ajout d'elements pour l'UX, des petits timers et messages.
+Ajout d'un greeting screen avec le Prof. Okitac.
+Ajout du choix du nom du joueur
+\_
+
 
 FREEEEEEEEEEEEEEEE
 

@@ -43,9 +43,10 @@ void delTeam(team_ pteam){
 
 int addPokeTeam(player* p, pokemon_ poke){
 	/* Adds a pokemon to the team if it contains less than 6 pokemons */
+	learn(poke.s, &(p->pokedex));
 	if (p->team.sizemax == p->team.nbpkmn){
-		p->team.sizemax *= 2;
-		p->team.pokemons = (pokemon_*)realloc(p->team.pokemons, p->team.sizemax*sizeof(pokemon_));
+		// p->team.sizemax *= 2;
+		// p->team.pokemons = (pokemon_*)realloc(p->team.pokemons, p->team.sizemax*sizeof(pokemon_));
 		return 1;
 	} else {
 

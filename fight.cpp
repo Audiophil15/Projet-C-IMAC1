@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ncurses.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "pokemon.h"
 #include "player.h"
@@ -8,7 +9,7 @@
 #include "ui.h"
 
 
-void fight(WINDOW* win, player_* p, pokemon_* enemy){
+void fight(window_ win, player_* p, pokemon_* enemy){
 	clear();
 
 	// Init of the winodws that will show the fight interface and the menus/messages respectively
@@ -23,8 +24,8 @@ void fight(WINDOW* win, player_* p, pokemon_* enemy){
 	wmenu.posx = wfight.posx+wfight.sx/2+4;
 	wmenu.posy = wfight.posy+7;
 
-	wfight.w = derwin(win, wfight.sx+2, wfight.sy+2, wfight.posx-1, wfight.posy-1);
-	wmenu.w = derwin(win, wmenu.sx, wmenu.sy, wmenu.posx-2, wmenu.posy-4);
+	wfight.w = derwin(win.w, wfight.sx+2, wfight.sy+2, wfight.posx-1, wfight.posy-1);
+	wmenu.w = derwin(win.w, wmenu.sx, wmenu.sy, wmenu.posx-2, wmenu.posy-4);
 	box(wfight.w, ACS_VLINE, ACS_HLINE);
 	
 	// Position of the ally and enemy's info
@@ -51,7 +52,7 @@ void fight(WINDOW* win, player_* p, pokemon_* enemy){
 
 	// end = 1 : victory; end = 2 : defeat; end = 3 : flee
 	int end=0;
-	while (end == 0 && choice != 120){ //DEBUG
+	while (end == 0 && choice != 120){ //120 = x // DEBUG
 
 		blockenemy = 0;
 		// box(fight, ACS_VLINE, ACS_HLINE);
@@ -120,7 +121,7 @@ void fight(WINDOW* win, player_* p, pokemon_* enemy){
 
 			case 3:
 				// Potion
-				animationPotion(wfight, wmenu, p, ally, enemyposx, enemyposy);
+				animationPotion(wfight, wmenu, p, ally, allyposx, allyposy);
 				// if (p->potions){
 				// 	p->potions -= 1;
 				// 	sprintf(msg, "%s utilise une potion !", p->name);
@@ -174,11 +175,11 @@ void fight(WINDOW* win, player_* p, pokemon_* enemy){
 			// }
 		}
 
-		wrefresh(wfight.w);
+		// wrefresh(wfight.w);
 	}
 
-	wrefresh(wfight.w);
-	sleep(1); // REMETTRE
+	// wrefresh(wfight.w);
+	// sleep(1); // REMETTRE
 
 }
 
@@ -208,11 +209,10 @@ int animationAllyAttack(window_  gwin, window_ msgwin, pokemon_* attacker, pokem
 	char msg [30];			
 	sprintf(msg, "%s attaque !", attacker->name);
 	msgbox(msgwin, msg);
-	// sleep(1); // REMETTRE
+	sleep(1); // REMETTRE
 	attack(attacker, defender);
 	pkmnInfoDisplay(gwin, targetposx, targetposy, *defender);
-	// wrefresh(gwin.w);
-	// sleep(1); // REMETTRE
+	sleep(1); // REMETTRE
 	if (isdead(*defender)){
 		sprintf(msg, "%s a perdu !", defender->name);
 		msgbox(msgwin, msg);
@@ -221,25 +221,26 @@ int animationAllyAttack(window_  gwin, window_ msgwin, pokemon_* attacker, pokem
 	return 0;
 }
 
-// NE MARCHE PAAAAAAAAS Dans le cas ou le dernier pokemon non KO du joueur est battu
 int animationEnemyAttack(window_ wfight, window_ wmenu, player* p, pokemon_** ally, pokemon_* enemy, int allyposx, int allyposy){
 	char msg[50];
 	int choice;
 	char const * actionsko[]={"changer de pokemon","fuir le combat"};
 	sprintf(msg, "%s sauvage attaque !", enemy->name);
 	msgbox(wmenu, msg);
-	// sleep(1); // REMETTRE
+	sleep(1); // REMETTRE
 	attack(enemy, *ally);
 	pkmnInfoDisplay(wfight, allyposx, allyposy, **ally);	
-	// wrefresh(wfight.w);
-	// sleep(1); // REMETTRE
+	sleep(1); // REMETTRE
 	if (isdead(**ally)){
 		sprintf(msg, "%s est KO, il ne peut plus combattre", (*ally)->name);
 		msgbox(wmenu, msg);
-		if (getFirstAliveIndex(*p)){
-			choice=menulist(wmenu, actionsko, 2, 1,0);
+		if (getFirstAliveIndex(*p)!=-1){
+			choice=menulist(wmenu, actionsko, 2, 1, 0);
 			if (choice!=-1) {
 				changePokemon(wmenu, p, ally);
+				sprintf(msg, "Go %s !", (*ally)->name);
+				msgbox(wmenu, msg);
+				sleep(1);
 				return 0;
 			} else {
 				return escape(wmenu);
@@ -257,9 +258,11 @@ int animationCapture(window_ msgwin, player* p, pokemon_ poke) {
 	char msg[30];
 	if (p->pokeballs){
 		p->pokeballs -= 1;
-		if (1){
-		// if (!(rand()%4)){ //DEBUG
-			learn(poke.s, &(p->pokedex));
+		sprintf(msg, "%s utilise une pokeball !", p->name);
+		msgbox(msgwin, msg);
+		sleep(1); // For the suspens
+		if (!(rand()%4)){ //DEBUG
+			msgbox(msgwin, "Tadaa !", 0, strlen(msg)+1, 0);
 			if (!addPokeTeam(p, poke)){
 				sprintf(msg, "%s a ete capture !", poke.name);
 				msgbox(msgwin, msg);
@@ -273,9 +276,12 @@ int animationCapture(window_ msgwin, player* p, pokemon_ poke) {
 			return 2;
 		} else {
 			msgbox(msgwin, "Capture ratee !");
-			sleep(1); // REMETTRE
 		}
+	} else {
+		sprintf(msg, "Vous n'avez plus de pokeball !", p->name);
+		msgbox(msgwin, msg);
 	}
+	sleep(1); // REMETTRE
 	return 0;
 }
 
@@ -285,14 +291,12 @@ void animationPotion (window_ gwin ,window_ msgwin, player_* p, pokemon_* poke, 
 		p->potions -= 1;
 		sprintf(msg, "%s utilise une potion !", p->name);
 		msgbox(msgwin, msg);
-		// wrefresh(msgwin.w);
 		sleep(1); // REMETTRE
 		poke->pv = min(poke->pv+20, poke->pvmax);
 		pkmnInfoDisplay(gwin, pokeposx, pokeposy, *poke);
-			
-		// wrefresh(gwin.w);
+		sleep(1); // REMETTRE
 	} else {
-		msgbox(msgwin, "Plus de potions !");
+		msgbox(msgwin, "Vous n'avez plus de potions !");
 		sleep(1); // REMETTRE
 	}
 }
@@ -300,6 +304,7 @@ void animationPotion (window_ gwin ,window_ msgwin, player_* p, pokemon_* poke, 
 int escape(window_ wmenu){
 	if (rand()%3){
 		msgbox(wmenu, "Vous prenez la fuite !");
+		sleep(1);
 		return 3;
 	}
 	msgbox(wmenu, "Fuite impossible !");
