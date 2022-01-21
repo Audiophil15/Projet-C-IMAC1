@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <string>
+#include "inventory.h"
 #include "position.h"
 #include "pokedex.h"
 #include "map.h"
@@ -19,19 +20,17 @@ typedef struct {
 typedef struct player{
 	char name[25];
 	position_ pos;
-	int pokeballs;
-	int potions;
+	inventory_ bag;
+	// int pokeballs;
+	// int potions;
 	pokedex_ pokedex;
 	team_ team;
 } player_;
 
-typedef struct inventaire{
-
-} inventaire_;
-
 player initPlayer(char* name, map_*, int, int);
 team_ initTeam();
 void delTeam(team_);
+void delInventory(inventory_ invent);
 int addPokeTeam(player* p, pokemon_ poke);
 int getFirstAliveIndex(player p);
 void movePlayer(player*, map_*, char);

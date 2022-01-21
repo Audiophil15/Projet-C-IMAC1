@@ -1,0 +1,5 @@
+Atq ->	ELEK	FEU		EAU		PLANTE
+ELEK	1		1		2		1
+FEU		1		1		0		2
+EAU		1		2		1		1
+PLANTE	1		0		2		1

@@ -1,0 +1,4 @@
+Difficultés :
+	Gestion des noms, tricks string/char const * -> On utilise uniquement des pointeurs pour les noms, qui pointent vers le tableau des noms
+
+Amusant de faire les petits details de probas pour les combats et tout

@@ -42,8 +42,8 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 	allyposy = wfight.posy+3*wfight.sy/4-5;
 
 
-	char const * actions[] = {"Attaque", "Pokemon", "Capture", "Potion", "Fuite"};
-	int menulen = 5;
+	char const * actions[] = {"Attaque", "Pokemon", "Sac", "Fuite"};
+	int menulen = 4;
 	int tmpindex;//, teamindex = 0;
 	int blockenemy;	// Allows to block the enemy's attack when quitting the "change pokemon" menu without changing
 	int choice;		// What action is chosen
@@ -54,8 +54,8 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 	int end=0;
 	while (end == 0 && choice != 120){ //120 = x // DEBUG
 
+		// Used to bypass enemy's turn
 		blockenemy = 0;
-		// box(fight, ACS_VLINE, ACS_HLINE);
 
 		pkmnInfoDisplay(wfight, enemyposx, enemyposy, *enemy);
 		pkmnInfoDisplay(wfight, allyposx, allyposy, *ally);	
@@ -66,127 +66,72 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 
 		switch (choice){
 			case 0:
-				// Attaque				
+				// Attack
+				// end = 1 if enemy is K.O.
 				end = animationAllyAttack(wfight, wmenu, ally, enemy, enemyposx, enemyposy, allyposx, allyposy);
-				// sprintf(msg, "%s attaque !", ally->name);
-				// msgbox(msgwin, msg);
-				// // sleep(1); // REMETTRE
-				// attack(ally, enemy);
-				// pkmnInfoDisplay(wfight, enemyposx, enemyposy, *enemy);
-				// wrefresh(wfight.w);
-				// // sleep(1); // REMETTRE
-				// if (isdead(*enemy)){
-				// 	end = 1;
-				// 	sprintf(msg, "%s a perdu !", enemy->name);
-				// 	msgbox(msgwin, msg);
-				// }
 				break;
 			case 1:
-				// Changer de pokemon
+				// Allows to bypass enemy's turn if the player just goes back in the menu
 				blockenemy = !(changePokemon(wmenu, p, &ally));
-				// tmpindex = pokemonlist(wmenu, *p);
-				// if (tmpindex != -1){ // If the user doesn't quit the menu, updates the pokemon index in the team
-				// 	teamindex = tmpindex;
-				// 	ally = &(p->team.pokemons[teamindex]);
-				// } else {
-				// 	blockenemy = 1;
-				// }
 				break;
 	
+			// Cases 2 and 3 need to be merged in one "Inventory"/"Bag"
 			case 2:
 				// Capture
-				end = animationCapture(wmenu, p, *enemy);
-				// if (p->pokeballs){
-				// 	p->pokeballs -= 1;
-				// 	if (1){
-				// 	// if (!(rand()%4)){ //DEBUG
-				// 		end = 2;
-				// 		learn(enemy->s, &(p->pokedex));
-				// 		if (!addPokeTeam(p, *enemy)){
-				// 			sprintf(msg, "%s a ete capture !", enemy->name);
-				// 			msgbox(msgwin, msg);
-				// 		} else {
-				// 			sprintf(msg, "%s a ete capture !", enemy->name);
-				// 			msgbox(msgwin, msg);
-				// 			msgbox(msgwin, "L'equipe est pleine, il a ete envoye", 1, 0, 0);
-				// 			msgbox(msgwin, "sur votre PC.", 2, 0, 0);
-				// 		}
-				// 		// sleep(1); // REMETTRE
-				// 	} else {
-				// 		msgbox(msgwin, "Capture ratee !");
-				// 		// sleep(1); // REMETTRE
-				// 	}
-				// }
+				// end = 2 if capture is successful
+				switch(bagMenu(wmenu, *p)){
+					case 0:
+						animationPotion(wfight, wmenu, p, ally, allyposx, allyposy);
+						break;
+					case 1:
+						end = animationCapture(wmenu, p, *enemy);
+						break;
+					case -1:
+						blockenemy = 1;
+					default :
+						break;
+				}
+				// end = animationCapture(wmenu, p, *enemy);
 				break;
+
+			// case 3:
+			// 	// Potion
+			// 	animationPotion(wfight, wmenu, p, ally, allyposx, allyposy);
+			// 	break;
 
 			case 3:
-				// Potion
-				animationPotion(wfight, wmenu, p, ally, allyposx, allyposy);
-				// if (p->potions){
-				// 	p->potions -= 1;
-				// 	sprintf(msg, "%s utilise une potion !", p->name);
-				// 	msgbox(msgwin, msg);
-				// 	// wrefresh(msgwin.w);
-				// 	// sleep(1); // REMETTRE
-				// 	ally->pv = min(ally->pv+20, ally->pvmax);
-				// 	pkmnInfoDisplay(wfight, allyposx, allyposy, *ally);	
-				// 	wrefresh(wfight.w);
-				// } else {
-				// 	msgbox(msgwin, "Plus de potions !");
-				// 	// sleep(1); // REMETTRE
-				// }
-				break;
-
-			case 4:
-				// Fuite
+				// Escape
+				// end = 3 if escape if successful
 				end = escape(wmenu);
-				// if (rand()%3){
-				// 	end = 3;
-				// 	msgbox(wmenu, "Vous prenez la fuite !");
-				// } else {
-				// 	msgbox(wmenu, "Fuite impossible !");
-				// 	// sleep(1); // REMETTRE
-				// }
 				break;
 			
 			default:
 				break;
 		}
 
+		// Enemy's turn
 		if (end == 0 && !blockenemy){
+			// end = -1 if all allies pokemon are K.O.
 			end = animationEnemyAttack(wfight, wmenu, p, &ally, enemy, allyposx, allyposy);
-			// sprintf(msg, "%s sauvage attaque !", enemy->name);
-			// msgbox(wmenu, msg);
-			// // sleep(1); // REMETTRE
-			// attack(enemy, ally);
-			// pkmnInfoDisplay(wfight, allyposx, allyposy, *ally);	
-			// // wrefresh(wfight.w);
-			// // sleep(1); // REMETTRE
-			// if (isdead(*ally)){
-			// 	sprintf(msg, "%s est KO, il ne peut plus combattre", ally->name);
-			// 	msgbox(wmenu, msg);
-			// 	choice=menulist(wmenu, actionsko, 2, 1,0);
-			// 	if (choice==0) {
-
-			// 	}
-
-
-
-			// }
 		}
-
-		// wrefresh(wfight.w);
 	}
 
-	// wrefresh(wfight.w);
-	// sleep(1); // REMETTRE
-
+	if (end == 1 && rand()%2){
+		int qty = rand()%2+1;
+		if (rand()%2){
+			p->bag[0].qty += qty;
+			sprintf(msg, "Vous obtenez %d pokeball", qty);
+		} else {
+			p->bag[1].qty += qty;
+			sprintf(msg, "Vous obtenez %d potion", qty);
+		}
+		msgbox(wmenu, msg);
+	}
 }
-
 
 void attack(pokemon_* attacker, pokemon_* defender){
 	/* He doesn't protec but... he attak */
-	defender->pv = max(0, defender->pv-max(attacker->atq-defender->def, 0));
+	defender->pv = max(0, defender->pv-max(attacker->atq*atkCoeff(*attacker, *defender)-defender->def, 0));
 }
 
 int isdead(pokemon_ poke){
@@ -195,7 +140,7 @@ int isdead(pokemon_ poke){
 }
 
 int changePokemon(window_ wmenu, player* p, pokemon_** ally){
-	int tmpindex = pokemonlist(wmenu, *p);
+	int tmpindex = pokemonMenu(wmenu, *p);
 	if (tmpindex != -1){ // If the user doesn't quit the menu, updates the pokemon index in the team
 		*ally = &(p->team.pokemons[tmpindex]);
 		return 1;
@@ -204,17 +149,25 @@ int changePokemon(window_ wmenu, player* p, pokemon_** ally){
 	}
 }
 
-int animationAllyAttack(window_  gwin, window_ msgwin, pokemon_* attacker, pokemon_* defender, int targetposx, int targetposy, int attackerposx, int attackerposy) {
+int animationAllyAttack(window_  gwin, window_ msgwin, pokemon_* ally, pokemon_* enemy, int targetposx, int targetposy, int allyposx, int allyposy) {
 // Attaque	
 	char msg [30];			
-	sprintf(msg, "%s attaque !", attacker->name);
+	int atkcoeff;
+	sprintf(msg, "%s attaque !", ally->name);
 	msgbox(msgwin, msg);
-	sleep(1); // REMETTRE
-	attack(attacker, defender);
-	pkmnInfoDisplay(gwin, targetposx, targetposy, *defender);
-	sleep(1); // REMETTRE
-	if (isdead(*defender)){
-		sprintf(msg, "%s a perdu !", defender->name);
+	sleep(1);
+	attack(ally, enemy);
+	pkmnInfoDisplay(gwin, targetposx, targetposy, *enemy);
+	sleep(1);
+	atkcoeff = atkCoeff(*ally, *enemy);
+	if (atkcoeff == 2){
+		msgbox(msgwin, "Super patate !");
+	} else if (atkcoeff == 0){
+		msgbox(msgwin, "Aucune effet !");
+	}
+	sleep(2);
+	if (isdead(*enemy)){
+		sprintf(msg, "%s a perdu !", enemy->name);
 		msgbox(msgwin, msg);
 		return 1;
 	}
@@ -223,17 +176,25 @@ int animationAllyAttack(window_  gwin, window_ msgwin, pokemon_* attacker, pokem
 
 int animationEnemyAttack(window_ wfight, window_ wmenu, player* p, pokemon_** ally, pokemon_* enemy, int allyposx, int allyposy){
 	char msg[50];
-	int choice;
+	int choice, atkcoeff;
 	char const * actionsko[]={"changer de pokemon","fuir le combat"};
 	sprintf(msg, "%s sauvage attaque !", enemy->name);
 	msgbox(wmenu, msg);
-	sleep(1); // REMETTRE
+	sleep(1);
 	attack(enemy, *ally);
 	pkmnInfoDisplay(wfight, allyposx, allyposy, **ally);	
-	sleep(1); // REMETTRE
+	sleep(1);
+	atkcoeff = atkCoeff(*enemy, **ally);
+	if (atkcoeff == 2){
+		msgbox(wmenu, "Super patate !");
+	} else if (atkcoeff == 0){
+		msgbox(wmenu, "Aucune effet !");
+	}
+	sleep(2);
 	if (isdead(**ally)){
 		sprintf(msg, "%s est KO, il ne peut plus combattre", (*ally)->name);
 		msgbox(wmenu, msg);
+		sleep(1);
 		if (getFirstAliveIndex(*p)!=-1){
 			choice=menulist(wmenu, actionsko, 2, 1, 0);
 			if (choice!=-1) {
@@ -247,6 +208,7 @@ int animationEnemyAttack(window_ wfight, window_ wmenu, player* p, pokemon_** al
 			}
 		} else {
 			msgbox(wmenu, "Vous n'avez plus de pokemon en forme !");
+			sleep(2);
 			return -1;
 		}
 	}
@@ -256,12 +218,13 @@ int animationEnemyAttack(window_ wfight, window_ wmenu, player* p, pokemon_** al
 int animationCapture(window_ msgwin, player* p, pokemon_ poke) {
 	// Capture
 	char msg[30];
-	if (p->pokeballs){
-		p->pokeballs -= 1;
+	// p->bag[1] == Pokeballs
+	if (p->bag[1].qty){
+		p->bag[1].qty -= 1;
 		sprintf(msg, "%s utilise une pokeball !", p->name);
 		msgbox(msgwin, msg);
 		sleep(1); // For the suspens
-		if (!(rand()%4)){ //DEBUG
+		if ((rand()%101 > 10+poke.pv*60/poke.pvmax)){
 			msgbox(msgwin, "Tadaa !", 0, strlen(msg)+1, 0);
 			if (!addPokeTeam(p, poke)){
 				sprintf(msg, "%s a ete capture !", poke.name);
@@ -272,7 +235,7 @@ int animationCapture(window_ msgwin, player* p, pokemon_ poke) {
 				msgbox(msgwin, "L'equipe est pleine, il a ete envoye", 1, 0, 0);
 				msgbox(msgwin, "sur votre PC.", 2, 0, 0);
 			}
-			sleep(1); // REMETTRE
+			sleep(1);
 			return 2;
 		} else {
 			msgbox(msgwin, "Capture ratee !");
@@ -281,23 +244,24 @@ int animationCapture(window_ msgwin, player* p, pokemon_ poke) {
 		sprintf(msg, "Vous n'avez plus de pokeball !", p->name);
 		msgbox(msgwin, msg);
 	}
-	sleep(1); // REMETTRE
+	sleep(1);
 	return 0;
 }
 
 void animationPotion (window_ gwin ,window_ msgwin, player_* p, pokemon_* poke, int pokeposx, int pokeposy){
 	char msg[30];
-	if (p->potions){
-		p->potions -= 1;
+	// p->bag[0] == Potions
+	if (p->bag[0].qty){
+		p->bag[0].qty -= 1;
 		sprintf(msg, "%s utilise une potion !", p->name);
 		msgbox(msgwin, msg);
-		sleep(1); // REMETTRE
+		sleep(1);
 		poke->pv = min(poke->pv+20, poke->pvmax);
 		pkmnInfoDisplay(gwin, pokeposx, pokeposy, *poke);
-		sleep(1); // REMETTRE
+		sleep(1);
 	} else {
 		msgbox(msgwin, "Vous n'avez plus de potions !");
-		sleep(1); // REMETTRE
+		sleep(1);
 	}
 }
 
@@ -308,6 +272,6 @@ int escape(window_ wmenu){
 		return 3;
 	}
 	msgbox(wmenu, "Fuite impossible !");
-	sleep(1); // REMETTRE
+	sleep(1);
 	return 0;
 }

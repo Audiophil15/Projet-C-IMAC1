@@ -3,22 +3,22 @@
 
 #include "player.h"
 #include "pokemon.h"
+#include "inventory.h"
 #include "pokedex.h"
 #include "map.h"
+
+#include <string>
 
 using namespace std;
 
 player initPlayer(char* name, map_* b, int x, int y){
-	/* Allocates memory and sets the struct's variables */
+	/* Allocates memory and sets the struct's variables */	
 
 	player p;
 	strcpy(p.name, name);
-	// p.name = name;
 	p.pos.x = x;
 	p.pos.y = y;
-	p.pokeballs = 15;
-	p.potions = 15;
-
+	p.bag = initInventory();
 	p.pokedex = initPokedex();
 	p.team = initTeam();
 
@@ -36,26 +36,26 @@ team_ initTeam(){
 	return t;
 }
 
+void delPlayer(player_ p){
+	delTeam(p.team);
+	delInventory(p.bag);
+}
+
 void delTeam(team_ pteam){
 	/* Free allocated memory */
 	free(pteam.pokemons);
+}
+
+void delInventory(inventory_ invent){
+	free(invent);
 }
 
 int addPokeTeam(player* p, pokemon_ poke){
 	/* Adds a pokemon to the team if it contains less than 6 pokemons */
 	learn(poke.s, &(p->pokedex));
 	if (p->team.sizemax == p->team.nbpkmn){
-		// p->team.sizemax *= 2;
-		// p->team.pokemons = (pokemon_*)realloc(p->team.pokemons, p->team.sizemax*sizeof(pokemon_));
 		return 1;
 	} else {
-
-		// if (p->team.pokemons == NULL){
-		// 	return -1;
-		// }
-		// if (!isKnown(poke.s, p->pokedex)){
-		// 	learn(poke.s, &(p->pokedex));
-		// }
 		p->team.pokemons[p->team.nbpkmn] = poke;
 		p->team.nbpkmn += 1;
 	}

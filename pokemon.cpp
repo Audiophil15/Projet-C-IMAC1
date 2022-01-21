@@ -10,6 +10,11 @@ int pokeAtq[] = {10, 10, 10, 10};
 int pokeDef[] = {5, 5, 5, 5};
 type pokeType[] = {ELEK, FEU, EAU, PLANTE};
 
+int coeff[] =  {1, 1, 2, 1,
+				1, 1, 0, 2,
+				1, 2, 1, 1,
+				1, 0, 2, 1};
+
 pokemon_ initPokemon(species s){
 	/* Inits a pokemon with its caracteristics according to its species */
 	pokemon_ p;
@@ -22,4 +27,12 @@ pokemon_ initPokemon(species s){
 	p.t = pokeType[s];
 
 	return p;
+}
+
+char const * getPokeName(int index){
+	return pokeNames[index];
+}
+
+int atkCoeff(pokemon_ atk, pokemon_ def){
+	return coeff[4*(int)atk.t+(int)def.t];
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ncurses.h>
+#include <unistd.h>
 
 #include "map.h"
 #include "player.h"
@@ -11,10 +12,17 @@
 int main(){
 
 	// Creates pointers to place windows of ncurses in
-	window_ wgame = initWindow(LINES, COLS, 0, 0);
+	window_ wgame;// = initWindow(LINES, COLS, 0, 0);
+	wgame.w = initscr();
+	wgame.sx = LINES;
+	wgame.sy = COLS;
+	wgame.posx = 0;
+	wgame.posy = 0;
+	
+	window_ wpause = initWindow(4, 20, LINES/2-2, COLS/2-4);
 
 	// inits the screen with the whole term as a window
-	wgame.w = initscr();
+	wpause.w = derwin(wgame.w, wpause.sx+2, wpause.sy+2, wpause.posx-1, wpause.posy-1);
 
 	// First refresh allows curs_set() to work
 	refresh();
@@ -32,20 +40,13 @@ int main(){
 	/////////
 	///////// Splash Screen
 	/////////
+	splashscreen(wgame);
+	
+	// Greets player and gets his name
+	char nom[15];
+	greetScreen(wgame, nom);
 	
 	// Creates a player and puts it in the map
-	// Get player's name
-	char nom[15];
-	msgbox(wgame, "Bonjour, je suis le Professeur Okitac.", LINES/2, COLS/2-25);
-	msgbox(wgame, "Je ne crois pas te connaitre, comment t'appelles-tu ?", LINES/2+1, COLS/2-25, 0);
-	// msgbox(wgame, "", LINES/2+2, COLS/2-25, 0); //Just to move the cursor to the line below
-	curs_set(1);
-	echo();
-	mvgetnstr(LINES/2+2, COLS/2-25, nom, 14);
-	noecho();
-	curs_set(0);
-	
-	// player_ p = initPlayer((char*)"Philippe", &b, b.height/2, b.width/2);
 	player_ p = initPlayer(nom, &b, b.height/2, b.width/2);
 
 	// Adds the first pokemon to the player's team
@@ -62,8 +63,11 @@ int main(){
 	// encounter prbability
 	int ep = 20;
 
+	// Allows the player to quit the game via the menu
+	int end = 0;
+
 	// Beginning of the game, stops when all species have been encountered, or when X is hit
-	while (!pokedexFull(p.pokedex) && getFirstAliveIndex(p)!=-1 && c!=120){
+	while (!end && !pokedexFull(p.pokedex) && getFirstAliveIndex(p)!=-1){
 		c = getch();
 		
 		// 410 is the "screen resize" code
@@ -75,24 +79,13 @@ int main(){
 		movePlayer(&p, &b, c);
 		
 		refreshMap(wgame.w, b);
-
-		// DEBUG
-		// Shows pokedex on screen
-		if (c==112){
-			char nana[2];
-			int pmenusx = LINES/2;
-			int pmenusy = COLS/3;
-			int pmenuposx = LINES/4;
-			int pmenuposy = COLS/3;
-			WINDOW* pausemenu = derwin(wgame.w, pmenusx, pmenusy, pmenuposx, pmenuposy);
-			wclear(wgame.w);
-			for (int i = 0; i < p.pokedex.size; i++){
-				sprintf(nana, "%d", p.pokedex.knownSpecies[i]);
-				mvprintw(pmenuposx, pmenuposy+i, nana);
-			}
-			wrefresh(wgame.w);
-			getch();
 		
+		if (c==32 || c==112 || c==115){
+			if (pauseMenu(wpause, p) == -1){
+				end = -1;
+			};
+			refreshMap(wgame.w, b);
+			//Menu de pause
 		} else {
 			// Approx. one chance in ep of triggering an encounter
 			e = rand()%ep;
@@ -105,17 +98,19 @@ int main(){
 		}
 	}
 
+	sleep(2);
+
 	if (pokedexFull(p.pokedex)){
 		msgbox(wgame, "Felicitations, vous avez complete le pokedex !", LINES/2, COLS/2-23);
-		getch();
 		//Fin Reussie
 	}
 
 	if (getFirstAliveIndex(p)==-1){
-		msgbox(wgame, "Vous n'avez plus de pokemon en forme !", LINES/2, COLS/2-19);
+		msgbox(wgame, "Vous avez été battu !", LINES/2-1, COLS/2-19);
 		msgbox(wgame, "Game Over", LINES/2+1, COLS/2-5, 0);
-		getch();
 	}
+
+	getch();
 
 	// Free allocated memory
 	delMap(b);

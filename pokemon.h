@@ -6,6 +6,7 @@
 
 using namespace std;
 
+#define NBTYPES 4
 typedef enum type {ELEK, FEU, EAU, PLANTE} type;
 typedef enum species {PIKACHU, SALAMECHE, CARAPUCE, BULBIZARRE} species;
 
@@ -20,5 +21,7 @@ typedef struct {
 } pokemon_;
 
 pokemon_ initPokemon(species e);
+char const * getPokeName(int index);
+int atkCoeff(pokemon_ atk, pokemon_ def);
 
 #endif

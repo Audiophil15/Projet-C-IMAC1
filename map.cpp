@@ -35,6 +35,7 @@ map_ initMap(int height, int width){
 	b.height = height;
 	b.width = width;
 	b.grid = (int*)malloc(sizeof(int)*b.width*b.height);
+	int grassAreas = b.width*b.height/100;
 	for (int i = 0; i < b.height; i++){
 		for (int j = 0; j < b.width; j++){
 			if (i>2 && i>6 && j>4 && j<9){
