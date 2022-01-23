@@ -7,8 +7,8 @@
 using namespace std;
 
 #define NBTYPES 4
-typedef enum type {ELEK, FEU, EAU, PLANTE} type;
-typedef enum species {PIKACHU, SALAMECHE, CARAPUCE, BULBIZARRE} species;
+typedef enum type {NORMAL, ELEK, FEU, EAU, PLANTE, ROCHE} type;
+typedef enum species {PIKACHU, SALAMECHE, CARAPUCE, BULBIZARRE, RACAILLOU, GROLEM, RONFLEX, MIMITOSS, RAICOU, ENTEI, SUICUNE} species;
 
 typedef struct {
 	char const * name;

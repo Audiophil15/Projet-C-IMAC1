@@ -2,6 +2,8 @@
 #include <ncurses.h>
 #include <unistd.h>
 
+#include <mcheck.h>
+
 #include "map.h"
 #include "player.h"
 #include "pokemon.h"
@@ -10,6 +12,8 @@
 #include "ui.h"
 
 int main(){
+
+	mtrace();
 
 	// Creates pointers to place windows of ncurses in
 	window_ wgame;// = initWindow(LINES, COLS, 0, 0);
@@ -28,6 +32,7 @@ int main(){
 	refresh();
 	noecho();
 	curs_set(0);
+	start_color();
 
 	// Rand seed init
 	srand(time(NULL));
@@ -106,7 +111,7 @@ int main(){
 	}
 
 	if (getFirstAliveIndex(p)==-1){
-		msgbox(wgame, "Vous avez été battu !", LINES/2-1, COLS/2-19);
+		msgbox(wgame, "Vous avez ete battu !", LINES/2-1, COLS/2-19);
 		msgbox(wgame, "Game Over", LINES/2+1, COLS/2-5, 0);
 	}
 
@@ -118,4 +123,9 @@ int main(){
 
 	// Closes ncurses
 	endwin();
+
+	muntrace();
+
+	return 0;
+	
 }

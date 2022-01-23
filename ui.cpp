@@ -220,26 +220,41 @@ void msgbox(window_ wmsgbox, char const* msg, int offsetx, int offsety, int wcl)
 
 void pkmnInfoDisplay(window_ wfight, int posx, int posy, pokemon_ poke){
 	/* Shows a pokemon info at given position. Shows name and pv stats with a healthbar */
+
 	init_pair(1, COLOR_WHITE, COLOR_BLACK);
+	init_pair(2, COLOR_GREEN, COLOR_BLACK);
+	init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(4, COLOR_RED, COLOR_BLACK);
+
 	float hbar;
+	int color = 1;
 	float hbarmax = 19;
 	char pv[21] = "                    ";
 	hbar = (int)((float)(poke.pv)/poke.pvmax*hbarmax);
+	if (hbar <= 10){
+		color = 3;
+	}
+	if (hbar <= 2){
+		color = 4;
+	}
 	for (int i = 0; i < hbar; i++){
 		pv[i] = '=';
 	}
-	// attron(COLOR_PAIR(1));
 	attron(A_BOLD);
 	mvprintw(posx, posy, "%s", poke.name);
 	attroff(A_BOLD);
 	mvprintw(posx+1, posy, "PV : %2d/%2d", poke.pv, poke.pvmax);
+	attron(COLOR_PAIR(color));
 	mvprintw(posx+2, posy, "   : %s", pv);
+	attroff(COLOR_PAIR(color));
 	wrefresh(wfight.w);
 }
 
 
 
 void splashscreen(window_ win){
+
+	init_pair(1, COLOR_RED, COLOR_BLACK);
 
 	//create the pokeball
 
@@ -251,21 +266,38 @@ void splashscreen(window_ win){
 	pokeball.w = derwin(win.w, pokeball.sx, pokeball.sy , pokeball.posx, pokeball.posy);
 	box(pokeball.w, ACS_VLINE, ACS_HLINE);
 
-	msgbox(pokeball, "             @@@@@@@@@@              ", 0, 0, 0);
-	msgbox(pokeball, "         @@@@@@((((((@@@@@@@         ", 1, 0, 0);
-	msgbox(pokeball, "     @@@@@(((((((((((((((((@@@@@     ", 2, 0, 0);
-	msgbox(pokeball, "   @@@@(((((((((((((((((((((((@@@@   ", 3, 0, 0);
-	msgbox(pokeball, "  @@@(((((((((((((((((((((((((((@@@  ", 4, 0, 0);
-	msgbox(pokeball, " @@@(((((((((((@@@@@@@(((((((((((@@@ ", 5, 0, 0);
-	msgbox(pokeball, "@@@((((((((((@@@     @@@((((((((((@@@", 6, 0, 0);
-	msgbox(pokeball, "@@@@@@@@@@@@@@@       @@@@@@@@@@@@@@@", 7, 0, 0);
-	msgbox(pokeball, "@@@          @@@     @@@          @@@", 8, 0, 0);
-	msgbox(pokeball, " @@@           @@@@@@@           @@@ ", 9, 0, 0);
-	msgbox(pokeball, "  @@@                           @@@  ", 10, 0, 0);
-	msgbox(pokeball, "   @@@                         @@@   ", 11, 0, 0);
-	msgbox(pokeball, "     @@@@                   @@@@     ", 12, 0, 0);
-	msgbox(pokeball, "        @@@@@@         @@@@@@        ", 13, 0, 0);
-	msgbox(pokeball, "            @@@@@@@@@@@@@            ", 14, 0, 0);
+	int offx=0;
+	int artwidth = 37;
+	char art[] ="             @@@@@@@@@@              .         @@@@@@$$$$$$@@@@@@@         .     @@@@@$$$$$$$$$$$$$$$$$@@@@@     .   @@@@$$$$$$$$$$$$$$$$$$$$$$$@@@@   .  @@@$$$$$$$$$$$$$$$$$$$$$$$$$$$@@@  . @@@$$$$$$$$$$$@@@@@@@$$$$$$$$$$$@@@ .@@@$$$$$$$$$$@@@     @@@$$$$$$$$$$@@@.@@@@@@@@@@@@@@@       @@@@@@@@@@@@@@@.@@@          @@@     @@@          @@@. @@@           @@@@@@@           @@@ .  @@@                           @@@  .   @@@                         @@@   .     @@@@                   @@@@     .        @@@@@@         @@@@@@        .            @@@@@@@@@@@@@            ";
+	for (int i = 0; i < strlen(art); i++){
+		if (art[i]=='$'){
+			attron(COLOR_PAIR(1));
+		} else {
+			attroff(COLOR_PAIR(1));
+		}
+		if (art[i]=='.'){
+			offx += 1;
+		} else {
+			mvprintw(pokeball.posx+offx, pokeball.posy+i%(artwidth+1), "%c", art[i]);
+		}
+	}
+	
+
+	// msgbox$pokeball, "             @@@@@@@@@@              ", 0, 0, 0);
+	// msgbox(pokeball, "         @@@@@@((((((@@@@@@@         ", 1, 0, 0);
+	// msgbox(pokeball, "     @@@@@(((((((((((((((((@@@@@     ", 2, 0, 0);
+	// msgbox(pokeball, "   @@@@(((((((((((((((((((((((@@@@   ", 3, 0, 0);
+	// msgbox(pokeball, "  @@@(((((((((((((((((((((((((((@@@  ", 4, 0, 0);
+	// msgbox(pokeball, " @@@(((((((((((@@@@@@@(((((((((((@@@ ", 5, 0, 0);
+	// msgbox(pokeball, "@@@((((((((((@@@     @@@((((((((((@@@", 6, 0, 0);
+	// msgbox(pokeball, "@@@@@@@@@@@@@@@       @@@@@@@@@@@@@@@", 7, 0, 0);
+	// msgbox(pokeball, "@@@          @@@     @@@          @@@", 8, 0, 0);
+	// msgbox(pokeball, " @@@           @@@@@@@           @@@ ", 9, 0, 0);
+	// msgbox(pokeball, "  @@@                           @@@  ", 10, 0, 0);
+	// msgbox(pokeball, "   @@@                         @@@   ", 11, 0, 0);
+	// msgbox(pokeball, "     @@@@                   @@@@     ", 12, 0, 0);
+	// msgbox(pokeball, "        @@@@@@         @@@@@@        ", 13, 0, 0);
+	// msgbox(pokeball, "            @@@@@@@@@@@@@            ", 14, 0, 0);
 
 	// create the welcome message
 

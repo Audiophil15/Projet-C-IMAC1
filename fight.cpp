@@ -116,30 +116,28 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 		}
 	}
 
-	if (end == 1 && rand()%2){
+	if (end == 1 && rand()%10>3){
 		int qty = rand()%2+1;
 		if (rand()%2){
+			SUPER TRUCS ICI
 			p->bag[0].qty += qty;
-			sprintf(msg, "Vous obtenez %d pokeball", qty);
+			sprintf(msg, "Vous avez obtenu %d pokeball !", qty);
 		} else {
 			p->bag[1].qty += qty;
-			sprintf(msg, "Vous obtenez %d potion", qty);
+			sprintf(msg, "Vous avez obtenu %d potion !", qty);
 		}
 		msgbox(wmenu, msg);
+		sleep(2);
 	}
 }
 
 void attack(pokemon_* attacker, pokemon_* defender){
 	/* He doesn't protec but... he attak */
-	defender->pv = max(0, defender->pv-max(attacker->atq*atkCoeff(*attacker, *defender)-defender->def, 0));
-}
-
-int isdead(pokemon_ poke){
-	/*So sad (?)*/
-	return poke.pv==0;
+	defender->pv = max(0, defender->pv-max(attacker->atq*atkCoeff(*attacker, *defender)+rand()%7-3-defender->def, 0));
 }
 
 int changePokemon(window_ wmenu, player* p, pokemon_** ally){
+	/* Allows to change the pokemon, and checks if the pokemon has been changed, used together with blockenemy variable to simulate a possibility not to change the pokemon without skipping its turn*/
 	int tmpindex = pokemonMenu(wmenu, *p);
 	if (tmpindex != -1){ // If the user doesn't quit the menu, updates the pokemon index in the team
 		*ally = &(p->team.pokemons[tmpindex]);
@@ -149,32 +147,31 @@ int changePokemon(window_ wmenu, player* p, pokemon_** ally){
 	}
 }
 
-int animationAllyAttack(window_  gwin, window_ msgwin, pokemon_* ally, pokemon_* enemy, int targetposx, int targetposy, int allyposx, int allyposy) {
+int animationAllyAttack(window_  gwin, window_ wmenu, pokemon_* ally, pokemon_* enemy, int targetposx, int targetposy, int allyposx, int allyposy) {
+	/* Creates the animation of text and health bar/numbers on the ally attack */
+
 // Attaque	
 	char msg [30];			
 	int atkcoeff;
 	sprintf(msg, "%s attaque !", ally->name);
-	msgbox(msgwin, msg);
+	msgbox(wmenu, msg);
 	sleep(1);
 	attack(ally, enemy);
 	pkmnInfoDisplay(gwin, targetposx, targetposy, *enemy);
 	sleep(1);
-	atkcoeff = atkCoeff(*ally, *enemy);
-	if (atkcoeff == 2){
-		msgbox(msgwin, "Super patate !");
-	} else if (atkcoeff == 0){
-		msgbox(msgwin, "Aucune effet !");
-	}
-	sleep(2);
+	animationAtkEffect(wmenu, *ally, *enemy);
 	if (isdead(*enemy)){
 		sprintf(msg, "%s a perdu !", enemy->name);
-		msgbox(msgwin, msg);
+		msgbox(wmenu, msg);
+		sleep(2);
 		return 1;
 	}
 	return 0;
 }
 
 int animationEnemyAttack(window_ wfight, window_ wmenu, player* p, pokemon_** ally, pokemon_* enemy, int allyposx, int allyposy){
+	/* Creates the animation of text and health bar/numbers on the enemy attack */
+
 	char msg[50];
 	int choice, atkcoeff;
 	char const * actionsko[]={"changer de pokemon","fuir le combat"};
@@ -184,13 +181,7 @@ int animationEnemyAttack(window_ wfight, window_ wmenu, player* p, pokemon_** al
 	attack(enemy, *ally);
 	pkmnInfoDisplay(wfight, allyposx, allyposy, **ally);	
 	sleep(1);
-	atkcoeff = atkCoeff(*enemy, **ally);
-	if (atkcoeff == 2){
-		msgbox(wmenu, "Super patate !");
-	} else if (atkcoeff == 0){
-		msgbox(wmenu, "Aucune effet !");
-	}
-	sleep(2);
+	animationAtkEffect(wmenu, *enemy,**ally);
 	if (isdead(**ally)){
 		sprintf(msg, "%s est KO, il ne peut plus combattre", (*ally)->name);
 		msgbox(wmenu, msg);
@@ -216,6 +207,8 @@ int animationEnemyAttack(window_ wfight, window_ wmenu, player* p, pokemon_** al
 }
 
 int animationCapture(window_ msgwin, player* p, pokemon_ poke) {
+	/* Creates the animation for the capture and calls the functions used to update team if needed */
+
 	// Capture
 	char msg[30];
 	// p->bag[1] == Pokeballs
@@ -249,6 +242,8 @@ int animationCapture(window_ msgwin, player* p, pokemon_ poke) {
 }
 
 void animationPotion (window_ gwin ,window_ msgwin, player_* p, pokemon_* poke, int pokeposx, int pokeposy){
+	/* Creates the animation for the potion and updates pokemon's pv */
+
 	char msg[30];
 	// p->bag[0] == Potions
 	if (p->bag[0].qty){
@@ -262,6 +257,18 @@ void animationPotion (window_ gwin ,window_ msgwin, player_* p, pokemon_* poke, 
 	} else {
 		msgbox(msgwin, "Vous n'avez plus de potions !");
 		sleep(1);
+	}
+}
+
+void animationAtkEffect(window_ w, pokemon_ atk, pokemon_ def){
+	int atkcoeff = atkCoeff(atk, def);
+	if (atkcoeff != 1){
+		if (atkcoeff == 2){
+			msgbox(w, "Super patate !");
+		} else {	// atkcoeff == 0
+			msgbox(w, "Aucune effet !");
+		}
+		sleep(2);
 	}
 }
 
