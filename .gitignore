@@ -1,5 +1,6 @@
-
-
+memout
+vgout
+structtest*
 test*
 *.o
 *.d

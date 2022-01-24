@@ -35,16 +35,15 @@ map_ initMap(int height, int width){
 	b.height = height;
 	b.width = width;
 	b.grid = (int*)malloc(sizeof(int)*b.width*b.height);
-	int grassAreas = b.width*b.height/100;
+
+	int grassAreas = b.width*b.height/1000;
+	
 	for (int i = 0; i < b.height; i++){
 		for (int j = 0; j < b.width; j++){
-			if (i>2 && i>6 && j>4 && j<9){
-				setTab(1, &b, i, j);
-			} else {
-				setTab(0, &b, i, j);
-			}
+			setTab(0, &b, i, j);
 		}
 	}
+
 	return b;
 }
 
@@ -59,8 +58,8 @@ void refreshMap(WINDOW* win, map_ b){
 	/* Refreshes the map display according to what's in the map's grid */
 
 	// Contain the position x and y of the map box
-	int bposx = (LINES-b.height+2)/2;
-	int bposy = (COLS-b.width+2)/2;
+	int bposx = (LINES-b.height)/2;
+	int bposy = (COLS-b.width)/2;
 	// Derivate window of the main window
 	b.win = derwin(win, b.height+2, b.width+2, bposx, bposy);
 	box(b.win, ACS_VLINE, ACS_HLINE);

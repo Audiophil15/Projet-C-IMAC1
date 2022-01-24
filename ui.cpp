@@ -18,24 +18,29 @@ window_ initWindow(int sx, int sy, int posx, int posy){
 }
 
 int menulist(window_ wmenu, char const ** choices, int menulength, int offsetx, int offsety, int wcl){
-	/* Creates a menu based on the choices and menulength given */
+	/* Creates a menu based on the choices and menulength given 
+	The menusize argument allows scrolling for too long menus
+	*/
 
 	// Clears the window if needed (default yes)
 	if(wcl){
-		wclear(wmenu.w);
+		wempty(wmenu);
 		box(wmenu.w, ACS_VLINE, ACS_HLINE);
 	}
 
+	int menusize = min(wmenu.sx, menulength);
+
 	int selection = 0;
+	int shift = 0;
 	int c = 0;
 
 	while(c != 120){ //while true
 		// prints all the choices, then prints the selected choice with reverse attribute
-		for (int i = 0; i < menulength; i++){
-			mvprintw(wmenu.posx+i, wmenu.posy, choices[i]);
+		for (int i = 0; i < menusize; i++){
+			mvprintw(wmenu.posx+i, wmenu.posy, choices[shift+i]);
 		}
 		attron(A_REVERSE);
-		mvprintw(wmenu.posx+selection, wmenu.posy, choices[selection]);
+		mvprintw(wmenu.posx+selection-shift, wmenu.posy, choices[selection]);
 		attroff(A_REVERSE);
 		
 		wrefresh(wmenu.w);
@@ -44,11 +49,17 @@ int menulist(window_ wmenu, char const ** choices, int menulength, int offsetx, 
 		c = getch();
 		switch (c){
 			case 65 :	// up
+				if (selection==shift){
+					
+				}
+				
+				shift += -(selection!=0)*(selection-1<shift)+(!selection)*(menulength-menusize);
 				selection += -1+(!selection)*menulength;
 				break;
 			case 66 :	// down
 				selection += 1;
 				selection %= menulength;
+				shift += (selection>shift+menusize-1)-shift*(selection==0);
 				break;
 			case 9 :
 			case 10 :
@@ -62,6 +73,69 @@ int menulist(window_ wmenu, char const ** choices, int menulength, int offsetx, 
 
 			case 120 :		//DEBUG
 				return 120;
+			default:
+				break;
+		}
+
+	}
+	return 120;
+}
+
+int pokedex(window_ wpokedex, player_ p){
+	/* Creates a pokedex based on the choices and menulength given 
+	The menusize argument allows scrolling for too long menus
+	*/
+
+	int size = min(PKDXS, wpokedex.sx);
+	int selection = 0;
+	int shift = 0;
+	int c = 0;
+
+	while(true){
+		// prints all the pokemons, then prints the selected pokemons with reverse attribute
+
+		wempty(wpokedex);
+		for (int i = 0; i < size; i++){
+			msgbox(wpokedex, getPokeName(shift+i), i, 0, 0);
+			if (p.pokedex.knownSpecies[shift+i]){
+				msgbox(wpokedex, "*", i, wpokedex.sy-2, 0);
+			}
+		}
+
+		// for (int i = 0; i < size; i++){
+		// 	mvprintw(wmenu.posx+i, wmenu.posy, getPokeName(shift+i));
+		// }
+		attron(A_REVERSE);
+		mvprintw(wpokedex.posx+selection-shift, wpokedex.posy, getPokeName(selection));
+		attroff(A_REVERSE);
+		
+		wrefresh(wpokedex.w);
+		// wrefresh(win);
+				
+		c = getch();
+		switch (c){
+			case 65 :	// up
+				shift += -(selection!=0)*(selection-1<shift)+(!selection)*(PKDXS-size);
+				selection += -1+(!selection)*PKDXS;
+				break;
+			case 66 :	// down
+				selection += 1;
+				selection %= PKDXS;
+				shift += (selection>shift+size-1)-shift*(selection==0);
+				break;
+
+			// Currently unused, would be used to implement a more complete pokedex with all information about the selected pokemon
+			/*
+			case 9 :
+			case 10 :
+			case 32 :
+				return selection;
+			*/
+
+			// Case to be ignored, if returns -1 the value should not be used as a choice, i.e. it allows to get out of the pokedex
+			case 127 : // Backspace
+			case 68 : // Left Arrow
+				return -1;
 			default:
 				break;
 		}
@@ -167,7 +241,7 @@ int bagMenu(window_ wbag, player_ p){
 }
 
 int pauseMenu(window_ wpause, player_ p){
-	char const* pause[] = {"Pokedex", "Equipe", "Inventaire", "Quitter"};
+	char const* pause[] = {"Pokedex", "Equipe", "Inventaire", "Quitter le jeu"};
 	int menulen = 4;
 	int choix;
 
@@ -180,7 +254,8 @@ int pauseMenu(window_ wpause, player_ p){
 		{
 		case 0:
 			// Afficher pokedex // menulist
-			pokedexList(wpause, p);
+			// pokedexList(wpause, p);
+			pokedex(wpause, p);
 			break;
 		case 1:
 			// Afficher equipe
@@ -203,10 +278,18 @@ int pauseMenu(window_ wpause, player_ p){
 	return 0;
 }
 
-void wempty(window_ w){
+void wempty(window_ w, int boxed){
 	/* Clears a window */
-	wclear(w.w);
-	box(w.w, ACS_VLINE, ACS_HLINE);
+	werase(w.w);
+	// wclear(w.w);
+	// for (int i = w.posx; i < w.posx+w.sx; i++){
+	// 	for (int j = w.posy; j < w.posy+w.sy; j++){
+	// 		mvprintw(i, j, " ");
+	// 	}
+	// }
+	if (boxed){
+		box(w.w, ACS_VLINE, ACS_HLINE);
+	}
 }
 	
 void msgbox(window_ wmsgbox, char const* msg, int offsetx, int offsety, int wcl){
@@ -219,34 +302,47 @@ void msgbox(window_ wmsgbox, char const* msg, int offsetx, int offsety, int wcl)
 }
 
 void pkmnInfoDisplay(window_ wfight, int posx, int posy, pokemon_ poke){
-	/* Shows a pokemon info at given position. Shows name and pv stats with a healthbar */
+	/* Shows a pokemon info at given position. Shows name and pv stats with a healthbar
+	Positions are relative to the parent window
+	*/
 
-	init_pair(1, COLOR_WHITE, COLOR_BLACK);
-	init_pair(2, COLOR_GREEN, COLOR_BLACK);
-	init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-	init_pair(4, COLOR_RED, COLOR_BLACK);
+	// init_pair(1, COLOR_WHITE, COLOR_BLACK);
+	// init_pair(2, COLOR_GREEN, COLOR_BLACK);
+	// init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+	// init_pair(4, COLOR_RED, COLOR_BLACK);
 
+	posx += wfight.posx;
+	posy += wfight.posy;
+
+	// char hpnum[15];
+	// char hpbar[30];
+	char hp[21] = "                    ";
 	float hbar;
 	int color = 1;
 	float hbarmax = 19;
-	char pv[21] = "                    ";
 	hbar = (int)((float)(poke.pv)/poke.pvmax*hbarmax);
-	if (hbar <= 10){
-		color = 3;
-	}
-	if (hbar <= 2){
-		color = 4;
-	}
+	// if (hbar <= 10){
+	// 	color = 3;
+	// }
+	// if (hbar <= 2){
+	// 	color = 4;
+	// }
 	for (int i = 0; i < hbar; i++){
-		pv[i] = '=';
+		hp[i] = '=';
 	}
+
+	// sprintf(hpnum, "PV : %2d/%2d", poke.pv, poke.pvmax);
+	// sprintf(hpbar, "   : %s", hp);
 	attron(A_BOLD);
-	mvprintw(posx, posy, "%s", poke.name);
+	// msgbox(wfight, poke.name, posx, posy, 0);
+	mvprintw(posx, posy, "%-25s", poke.name);
 	attroff(A_BOLD);
-	mvprintw(posx+1, posy, "PV : %2d/%2d", poke.pv, poke.pvmax);
-	attron(COLOR_PAIR(color));
-	mvprintw(posx+2, posy, "   : %s", pv);
-	attroff(COLOR_PAIR(color));
+	// msgbox(wfight, hpnum, posx+1, posy, 0);
+	mvprintw(posx+1, posy, "PV : %3d/%-3d", poke.pv, poke.pvmax);
+	// attron(COLOR_PAIR(color));
+	// msgbox(wfight, hpbar, posx+2, posy, 0);
+	mvprintw(posx+2, posy, "   : %s", hp);
+	// attroff(COLOR_PAIR(color));
 	wrefresh(wfight.w);
 }
 
@@ -254,7 +350,10 @@ void pkmnInfoDisplay(window_ wfight, int posx, int posy, pokemon_ poke){
 
 void splashscreen(window_ win){
 
-	init_pair(1, COLOR_RED, COLOR_BLACK);
+	// Index, FG, BG
+	init_pair(1, COLOR_RED, COLOR_RED);
+	init_pair(2, COLOR_BLACK, COLOR_BLACK);
+	init_pair(3, COLOR_WHITE, COLOR_WHITE);
 
 	//create the pokeball
 
@@ -267,35 +366,42 @@ void splashscreen(window_ win){
 	box(pokeball.w, ACS_VLINE, ACS_HLINE);
 
 	int offx=0;
+	int color;
 	int artwidth = 37;
-	char art[] ="             @@@@@@@@@@              .         @@@@@@$$$$$$@@@@@@@         .     @@@@@$$$$$$$$$$$$$$$$$@@@@@     .   @@@@$$$$$$$$$$$$$$$$$$$$$$$@@@@   .  @@@$$$$$$$$$$$$$$$$$$$$$$$$$$$@@@  . @@@$$$$$$$$$$$@@@@@@@$$$$$$$$$$$@@@ .@@@$$$$$$$$$$@@@     @@@$$$$$$$$$$@@@.@@@@@@@@@@@@@@@       @@@@@@@@@@@@@@@.@@@          @@@     @@@          @@@. @@@           @@@@@@@           @@@ .  @@@                           @@@  .   @@@                         @@@   .     @@@@                   @@@@     .        @@@@@@         @@@@@@        .            @@@@@@@@@@@@@            ";
+	char art[] ="             @@@@@@@@@@@             .         @@@@@@$$$$$$$@@@@@@         .     @@@@@$$$$$$$$$$$$$$$$$@@@@@     .   @@@@$$$$$$$$$$$$$$$$$$$$$$$@@@@   .  @@@$$$$$$$$$$$$$$$$$$$$$$$$$$$@@@  . @@@$$$$$$$$$$$@@@@@@@$$$$$$$$$$$@@@ . @@@$$$$$$$$$@@@     @@@$$$$$$$$$@@@ . @@@@@@@@@@@@@@       @@@@@@@@@@@@@@ . @@@         @@@     @@@         @@@ . @@@           @@@@@@@           @@@ .  @@@                           @@@  .   @@@@                       @@@@   .     @@@@@                 @@@@@     .        @@@@@@         @@@@@@        .            @@@@@@@@@@@@@            ";
 	for (int i = 0; i < strlen(art); i++){
 		if (art[i]=='$'){
-			attron(COLOR_PAIR(1));
-		} else {
-			attroff(COLOR_PAIR(1));
+			color = 1;
+		// } else if (art[i]=='-'){
+		} else if (art[i]=='@'){
+			color = 3;
 		}
+		
+
 		if (art[i]=='.'){
 			offx += 1;
-		} else {
+		} else if(art[i]!=' '){
+			attron(COLOR_PAIR(color));
 			mvprintw(pokeball.posx+offx, pokeball.posy+i%(artwidth+1), "%c", art[i]);
+			attroff(COLOR_PAIR(color));
 		}
 	}
 	
+	//"             @@@@@@@@@@              .         @@@@@@$$$$$$@@@@@@@         .     @@@@@$$$$$$$$$$$$$$$$$@@@@@     .   @@@@$$$$$$$$$$$$$$$$$$$$$$$@@@@   .  @@@$$$$$$$$$$$$$$$$$$$$$$$$$$$@@@  . @@@$$$$$$$$$$$@@@@@@@$$$$$$$$$$$@@@ .@@@$$$$$$$$$$@@@-----@@@$$$$$$$$$$@@@.@@@@@@@@@@@@@@@-------@@@@@@@@@@@@@@@.@@@          @@@-----@@@          @@@. @@@-----------@@@@@@@----------@@@ .  @@@---------------------------@@@  .   @@@-------------------------@@@   .     @@@@-------------------@@@@     .        @@@@@@---------@@@@@@        .            @@@@@@@@@@@@@  
 
-	// msgbox$pokeball, "             @@@@@@@@@@              ", 0, 0, 0);
-	// msgbox(pokeball, "         @@@@@@((((((@@@@@@@         ", 1, 0, 0);
-	// msgbox(pokeball, "     @@@@@(((((((((((((((((@@@@@     ", 2, 0, 0);
-	// msgbox(pokeball, "   @@@@(((((((((((((((((((((((@@@@   ", 3, 0, 0);
-	// msgbox(pokeball, "  @@@(((((((((((((((((((((((((((@@@  ", 4, 0, 0);
-	// msgbox(pokeball, " @@@(((((((((((@@@@@@@(((((((((((@@@ ", 5, 0, 0);
-	// msgbox(pokeball, "@@@((((((((((@@@     @@@((((((((((@@@", 6, 0, 0);
-	// msgbox(pokeball, "@@@@@@@@@@@@@@@       @@@@@@@@@@@@@@@", 7, 0, 0);
-	// msgbox(pokeball, "@@@          @@@     @@@          @@@", 8, 0, 0);
+	// msgbox$pokeball, "             @@@@@@@@@@@             ", 0, 0, 0);
+	// msgbox(pokeball, "         @@@@@@$$$$$$$@@@@@@         ", 1, 0, 0);
+	// msgbox(pokeball, "     @@@@@$$$$$$$$$$$$$$$$$@@@@@     ", 2, 0, 0);
+	// msgbox(pokeball, "   @@@@$$$$$$$$$$$$$$$$$$$$$$$@@@@   ", 3, 0, 0);
+	// msgbox(pokeball, "  @@@$$$$$$$$$$$$$$$$$$$$$$$$$$$@@@  ", 4, 0, 0);
+	// msgbox(pokeball, " @@@$$$$$$$$$$$@@@@@@@$$$$$$$$$$$@@@ ", 5, 0, 0);
+	// msgbox(pokeball, " @@@$$$$$$$$$@@@     @@@$$$$$$$$$@@@ ", 6, 0, 0);
+	// msgbox(pokeball, " @@@@@@@@@@@@@@       @@@@@@@@@@@@@@ ", 7, 0, 0);
+	// msgbox(pokeball, " @@@         @@@     @@@         @@@ ", 8, 0, 0);
 	// msgbox(pokeball, " @@@           @@@@@@@           @@@ ", 9, 0, 0);
 	// msgbox(pokeball, "  @@@                           @@@  ", 10, 0, 0);
-	// msgbox(pokeball, "   @@@                         @@@   ", 11, 0, 0);
-	// msgbox(pokeball, "     @@@@                   @@@@     ", 12, 0, 0);
+	// msgbox(pokeball, "   @@@@                       @@@@   ", 11, 0, 0);
+	// msgbox(pokeball, "     @@@@@                 @@@@@     ", 12, 0, 0);
 	// msgbox(pokeball, "        @@@@@@         @@@@@@        ", 13, 0, 0);
 	// msgbox(pokeball, "            @@@@@@@@@@@@@            ", 14, 0, 0);
 

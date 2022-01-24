@@ -35,12 +35,18 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 	int allyposy;
 
 	// Up Left Corner
-	enemyposx = wfight.posx+1;
-	enemyposy = wfight.posy+10;
-	// Bottom Right
-	allyposx = wfight.posx+wfight.sx/2-2;
-	allyposy = wfight.posy+3*wfight.sy/4-5;
+	// enemyposx = wfight.posx+1;
+	// enemyposy = wfight.posy+10;
+	// // Bottom Right
+	// allyposx = wfight.posx+wfight.sx/2-2;
+	// allyposy = wfight.posy+3*wfight.sy/4-5;
 
+	// Up Left Corner
+	enemyposx = 1;
+	enemyposy = 10;
+	// Bottom Right
+	allyposx = wfight.sx/2-2;
+	allyposy = 3*wfight.sy/4-5;
 
 	char const * actions[] = {"Attaque", "Pokemon", "Sac", "Fuite"};
 	int menulen = 4;
@@ -73,6 +79,7 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 			case 1:
 				// Allows to bypass enemy's turn if the player just goes back in the menu
 				blockenemy = !(changePokemon(wmenu, p, &ally));
+				pkmnInfoDisplay(wfight, allyposx, allyposy, *ally);	
 				break;
 	
 			// Cases 2 and 3 need to be merged in one "Inventory"/"Bag"
@@ -81,10 +88,18 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 				// end = 2 if capture is successful
 				switch(bagMenu(wmenu, *p)){
 					case 0:
-						animationPotion(wfight, wmenu, p, ally, allyposx, allyposy);
+						animationPotion(wmenu, p, ally, 0);
+						pkmnInfoDisplay(wfight, allyposx, allyposy, *ally);	
 						break;
 					case 1:
-						end = animationCapture(wmenu, p, *enemy);
+						end = animationCapture(wmenu, p, *enemy, 0);
+						break;
+					case 2:
+						animationPotion(wmenu, p, ally, 1);
+						pkmnInfoDisplay(wfight, allyposx, allyposy, *ally);	
+						break;
+					case 3:
+						end = animationCapture(wmenu, p, *enemy, 1);
 						break;
 					case -1:
 						blockenemy = 1;
@@ -117,23 +132,45 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 	}
 
 	if (end == 1 && rand()%10>3){
-		int qty = rand()%2+1;
-		if (rand()%2){
-			SUPER TRUCS ICI
-			p->bag[0].qty += qty;
-			sprintf(msg, "Vous avez obtenu %d pokeball !", qty);
-		} else {
-			p->bag[1].qty += qty;
-			sprintf(msg, "Vous avez obtenu %d potion !", qty);
-		}
-		msgbox(wmenu, msg);
-		sleep(2);
+		findItems(wfight, p);
 	}
 }
 
 void attack(pokemon_* attacker, pokemon_* defender){
 	/* He doesn't protec but... he attak */
-	defender->pv = max(0, defender->pv-max(attacker->atq*atkCoeff(*attacker, *defender)+rand()%7-3-defender->def, 0));
+	if (atkCoeff(*attacker, *defender)){
+		defender->pv = max(0, defender->pv-max(attacker->atq*atkCoeff(*attacker, *defender)+rand()%7-3-defender->def, 1));
+	}
+}
+
+void findItems(window_ w, player_* p){
+	int qty = rand()%3+1;
+	int item = rand()%4;
+	char msg[40];
+	p->bag[item].qty += qty;
+	switch (item)
+	{
+	case 0:
+		sprintf(msg, "Vous avez obtenu %d Potion !", qty);
+		break;
+	
+	case 1:
+		sprintf(msg, "Vous avez obtenu %d Pokeball !", qty);
+		break;
+	
+	case 2:
+		sprintf(msg, "Vous avez obtenu %d Super Potion !", qty);
+		break;
+	
+	case 3:
+		sprintf(msg, "Vous avez obtenu %d Super Ball !", qty);
+		break;
+	
+	default:
+		break;
+	}
+	msgbox(w, msg);
+	sleep(2);
 }
 
 int changePokemon(window_ wmenu, player* p, pokemon_** ally){
@@ -206,18 +243,20 @@ int animationEnemyAttack(window_ wfight, window_ wmenu, player* p, pokemon_** al
 	return 0;
 }
 
-int animationCapture(window_ msgwin, player* p, pokemon_ poke) {
+int animationCapture(window_ msgwin, player* p, pokemon_ poke, int ballIndex) {
 	/* Creates the animation for the capture and calls the functions used to update team if needed */
 
 	// Capture
 	char msg[30];
-	// p->bag[1] == Pokeballs
-	if (p->bag[1].qty){
-		p->bag[1].qty -= 1;
-		sprintf(msg, "%s utilise une pokeball !", p->name);
+	char const * item[] = {"pokeball", "Super Ball"};
+	// p->bag[1] == Pokeballs, 3==Super Balls
+	int index = ballIndex*2+1;
+	if (p->bag[index].qty){
+		p->bag[index].qty -= 1;
+		sprintf(msg, "%s utilise une %s !", p->name, item[ballIndex]);
 		msgbox(msgwin, msg);
 		sleep(1); // For the suspens
-		if ((rand()%101 > 10+poke.pv*60/poke.pvmax)){
+		if ((rand()%101 > 10+poke.pv*60/poke.pvmax-ballIndex*30)){
 			msgbox(msgwin, "Tadaa !", 0, strlen(msg)+1, 0);
 			if (!addPokeTeam(p, poke)){
 				sprintf(msg, "%s a ete capture !", poke.name);
@@ -241,18 +280,20 @@ int animationCapture(window_ msgwin, player* p, pokemon_ poke) {
 	return 0;
 }
 
-void animationPotion (window_ gwin ,window_ msgwin, player_* p, pokemon_* poke, int pokeposx, int pokeposy){
+void animationPotion (window_ msgwin, player_* p, pokemon_* poke, int potionIndex){
 	/* Creates the animation for the potion and updates pokemon's pv */
 
 	char msg[30];
+	char const * item[] = {"potion", "Super Potion"};
+	// p->bag[1] == potion, 3==Super Potion
+	int index = potionIndex*2;
 	// p->bag[0] == Potions
-	if (p->bag[0].qty){
-		p->bag[0].qty -= 1;
-		sprintf(msg, "%s utilise une potion !", p->name);
+	if (p->bag[index].qty){
+		p->bag[index].qty -= 1;
+		sprintf(msg, "%s utilise une %s !", p->name, item[potionIndex]);
 		msgbox(msgwin, msg);
 		sleep(1);
-		poke->pv = min(poke->pv+20, poke->pvmax);
-		pkmnInfoDisplay(gwin, pokeposx, pokeposy, *poke);
+		poke->pv = min(poke->pv+20*(index==0)+50*(index==1), poke->pvmax);
 		sleep(1);
 	} else {
 		msgbox(msgwin, "Vous n'avez plus de potions !");

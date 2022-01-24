@@ -72,7 +72,7 @@ int getFirstAliveIndex(player p){
 	return -1;
 }
 
-void movePlayer(player* p, map_* b, char direction){
+int movePlayer(player* p, map_* b, char direction){
 	/* Moves the player and updates the printout */
 	static int c;
 	int xmv = 0;
@@ -97,5 +97,6 @@ void movePlayer(player* p, map_* b, char direction){
 		c = getTab(*b, p->pos.x, p->pos.y);		// Saves what kind of ground it is before player steps on it
 		setTab(JOUEUR, b, p->pos.x, p->pos.y);	// Puts the player in the new place he reached
 	}
+	return c;
 }
 

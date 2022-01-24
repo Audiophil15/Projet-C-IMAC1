@@ -3,7 +3,7 @@
 
 #include "pokemon.h"
 
-#define PKDXS 4
+#define PKDXS 11
 
 typedef struct {
 	// Contains 1 for known species, 0 otherwise

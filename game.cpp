@@ -13,8 +13,6 @@
 
 int main(){
 
-	mtrace();
-
 	// Creates pointers to place windows of ncurses in
 	window_ wgame;// = initWindow(LINES, COLS, 0, 0);
 	wgame.w = initscr();
@@ -23,7 +21,7 @@ int main(){
 	wgame.posx = 0;
 	wgame.posy = 0;
 	
-	window_ wpause = initWindow(4, 20, LINES/2-2, COLS/2-4);
+	window_ wpause = initWindow(4, 20, LINES/2-2, COLS/2-10);
 
 	// inits the screen with the whole term as a window
 	wpause.w = derwin(wgame.w, wpause.sx+2, wpause.sy+2, wpause.posx-1, wpause.posy-1);
@@ -33,6 +31,7 @@ int main(){
 	noecho();
 	curs_set(0);
 	start_color();
+	use_default_colors();
 
 	// Rand seed init
 	srand(time(NULL));
@@ -42,9 +41,7 @@ int main(){
 	int mapysize = 9*COLS/10;
 	map_ b = initMap(mapxsize, mapysize);
 
-	/////////
-	///////// Splash Screen
-	/////////
+	// Splash Screen
 	splashscreen(wgame);
 	
 	// Greets player and gets his name
@@ -57,16 +54,24 @@ int main(){
 	// Adds the first pokemon to the player's team
 	addPokeTeam(&p, initPokemon(PIKACHU));
 
+	wempty(wgame, 0);
+
 	// First refresh of the map to see it when starting
 	refreshMap(wgame.w, b);
 
 	// Will receive the code returned by getch();
 	int c = 0;
 
+	// Stores the kind of area the player is in
+	int area;
 	// encounter ?
 	int e;
-	// encounter prbability
+	// encounter probability, 1 over ...
 	int ep = 20;
+	// Probability in Grass Modifier
+	int pgm = 10;
+
+	pokemon_ wild;
 
 	// Allows the player to quit the game via the menu
 	int end = 0;
@@ -81,7 +86,7 @@ int main(){
 		}
 
 		// Moves the player if c is the code of an arrow
-		movePlayer(&p, &b, c);
+		area = movePlayer(&p, &b, c);
 		
 		refreshMap(wgame.w, b);
 		
@@ -93,9 +98,12 @@ int main(){
 			//Menu de pause
 		} else {
 			// Approx. one chance in ep of triggering an encounter
-			e = rand()%ep;
+			e = rand()%(ep-area*pgm);
 			if (!e){
-				pokemon_ wild = initPokemon((species)(rand()%PKDXS));
+				do{
+					wild = initPokemon((species)(rand()%PKDXS));
+				} while (wild.legend==1 && p.pokedex.knownSpecies[(int)(wild.s)]);
+				
 				fight(wgame, &p, &wild);
 				clear();
 				refreshMap(wgame.w, b);
@@ -103,7 +111,7 @@ int main(){
 		}
 	}
 
-	sleep(2);
+	wempty(wgame);
 
 	if (pokedexFull(p.pokedex)){
 		msgbox(wgame, "Felicitations, vous avez complete le pokedex !", LINES/2, COLS/2-23);
@@ -111,9 +119,18 @@ int main(){
 	}
 
 	if (getFirstAliveIndex(p)==-1){
-		msgbox(wgame, "Vous avez ete battu !", LINES/2-1, COLS/2-19);
+		msgbox(wgame, "Vous avez ete battu !", LINES/2-1, COLS/2-11);
 		msgbox(wgame, "Game Over", LINES/2+1, COLS/2-5, 0);
 	}
+
+	if (end){
+		msgbox(wgame, "Revenez bientot !", LINES/2-1, COLS/2-9, 0);
+		msgbox(wgame, "Game Over", LINES/2+1, COLS/2-5, 0);
+	}
+
+	sleep(3);
+
+	msgbox(wgame, "Jeu programme par Lucie et Philippe", LINES/2, COLS/2-18);
 
 	getch();
 
@@ -123,8 +140,6 @@ int main(){
 
 	// Closes ncurses
 	endwin();
-
-	muntrace();
 
 	return 0;
 	

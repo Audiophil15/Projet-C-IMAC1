@@ -33,6 +33,6 @@ void delTeam(team_);
 void delInventory(inventory_ invent);
 int addPokeTeam(player* p, pokemon_ poke);
 int getFirstAliveIndex(player p);
-void movePlayer(player*, map_*, char);
+int movePlayer(player*, map_*, char);
 
 #endif
