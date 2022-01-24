@@ -130,7 +130,7 @@ int main(){
 		msgbox(wgame, "Game Over", LINES/2+1, COLS/2-5, 0);
 	}
 
-	//sleep(3);
+	sleep(3);
 
 	msgbox(wgame, "Jeu programme par Lucie et Philippe", LINES/2, COLS/2-18);
 

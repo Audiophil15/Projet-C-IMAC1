@@ -170,8 +170,7 @@ int pokemonList(window_ wlist, player_ p){
 	Creates a list with pokemons
 	Differs from menu by not reversing a selected line
 	*/
-	char pv[6];
-	int choix=0;
+	char pv[8];
 	pokemon_ poke;
 	pokemon_ * team = p.team.pokemons;
 
@@ -179,7 +178,7 @@ int pokemonList(window_ wlist, player_ p){
 	for (int i = 0; i < p.team.nbpkmn; i++){
 		poke = team[i];
 		msgbox(wlist, poke.name, i, 0, 0);
-		sprintf(pv, "%2d/%2d", poke.pv, poke.pvmax);
+		sprintf(pv, "%3d/%-3d", poke.pv, poke.pvmax);
 		msgbox(wlist, pv, i, 14, 0);
 	}
 	return getReturn(); // Allows to read before quitting
@@ -188,7 +187,6 @@ int pokemonList(window_ wlist, player_ p){
 int bagList(window_ wbag, player_ p){
 	char qty[4];
 	item_ * items = p.bag;
-	int choix = 0;
 
 	wempty(wbag);
 	for (int i = 0; i < INVENTSIZE; i++){
@@ -202,7 +200,7 @@ int bagList(window_ wbag, player_ p){
 int pokemonMenu(window_ wmenu, player_ p){
 	/* Creates a menu with pokemons */
 	char const * pokenames[6];
-	char pv[6];
+	char pv[8];
 	int choix=0;
 	pokemon_ poke;
 
@@ -210,7 +208,7 @@ int pokemonMenu(window_ wmenu, player_ p){
 	for (int i = 0; i < p.team.nbpkmn; i++){
 		poke = p.team.pokemons[i];
 		pokenames[i] = poke.name;
-		sprintf(pv, "%2d/%2d", poke.pv, poke.pvmax);
+		sprintf(pv, "%3d/%-3d", poke.pv, poke.pvmax);
 		msgbox(wmenu, pv, i, 22, 0);
 	}
 
@@ -312,7 +310,6 @@ void pkmnInfoDisplay(window_ wfight, int posx, int posy, pokemon_ poke){
 
 	char hp[21] = "                    ";
 	float hbar;
-	int color = 1;
 	float hbarmax = 19;
 	hbar = (int)((float)(poke.pv)/poke.pvmax*hbarmax);
 	for (int i = 0; i < hbar; i++){
@@ -395,15 +392,15 @@ void greetScreen(window_ w, char* name){
 
 	int txtposx = LINES/2-5;
 	msgbox(w, "Bienvenue dans le monde des Pokemon !", txtposx, COLS/2-25);
-	//sleep(2);
+	sleep(2);
 	msgbox(w, "Tu devras m'aider a remplir le Pokedex local,", txtposx+2, COLS/2-25, 0);
 	msgbox(w, "voici un Pikachu qui deviendra ton meilleur compagnon.", txtposx+3, COLS/2-25, 0);
-	//sleep(4);
+	sleep(4);
 	msgbox(w, "Tu peux consulter le Pokedex en appuyant sur P ou Espace.", txtposx+5, COLS/2-25, 0);
-	//sleep(2);
+	sleep(2);
 	msgbox(w, "Il est maintenant l'heure pour toi de", txtposx+7, COLS/2-25, 0);
 	msgbox(w, "tous les capturer !", txtposx+8, COLS/2-25, 0);
-	//sleep(1);
+	sleep(1);
 	button(w, (char*)"C'est parti !", txtposx+11, COLS/2-6);
 
 	wempty(w);

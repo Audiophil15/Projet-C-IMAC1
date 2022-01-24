@@ -8,7 +8,6 @@
 #include "fight.h"
 #include "ui.h"
 
-
 void fight(window_ win, player_* p, pokemon_* enemy){
 	clear();
 
@@ -43,10 +42,8 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 
 	char const * actions[] = {"Attaque", "Pokemon", "Sac", "Fuite"};
 	int menulen = 4;
-	int tmpindex;
 	int blockenemy;	// Allows to block the enemy's attack when quitting the "change pokemon" menu without changing
 	int choice;		// What action is chosen
-	char msg [100];	// Used to print message
 	pokemon_ * ally = &(p->team.pokemons[getFirstAliveIndex(*p)]); // Just a shortcut to avoid to many memory access
 
 	// end = 1 : victory; end = 2 : defeat; end = 3 : flee
@@ -122,6 +119,8 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 	}
 }
 
+// Actions
+
 void attack(pokemon_* attacker, pokemon_* defender){
 	/* He doesn't protec but... he attak */
 	if (atkCoeff(*attacker, *defender)){
@@ -151,7 +150,7 @@ void findItems(window_ w, player_* p){
 		break;
 	}
 	msgbox(w, msg);
-	//sleep(2);
+	sleep(2);
 }
 
 int changePokemon(window_ wmenu, player* p, pokemon_** ally){
@@ -165,23 +164,35 @@ int changePokemon(window_ wmenu, player* p, pokemon_** ally){
 	}
 }
 
+int escape(window_ wmenu){
+	if (rand()%3){
+		msgbox(wmenu, "Vous prenez la fuite !");
+		sleep(1);
+		return 3;
+	}
+	msgbox(wmenu, "Fuite impossible !");
+	sleep(1);
+	return 0;
+}
+
+// Animations
+
 int animationAllyAttack(window_  gwin, window_ wmenu, pokemon_* ally, pokemon_* enemy, int targetposx, int targetposy, int allyposx, int allyposy) {
 	/* Creates the animation of text and health bar/numbers on the ally attack */
 
 // Attaque	
-	char msg [30];			
-	int atkcoeff;
+	char msg [40];			
 	sprintf(msg, "%s attaque !", ally->name);
 	msgbox(wmenu, msg);
-	//sleep(1);
+	sleep(1);
 	attack(ally, enemy);
 	pkmnInfoDisplay(gwin, targetposx, targetposy, *enemy);
-	//sleep(1);
+	sleep(1);
 	animationAtkEffect(wmenu, *ally, *enemy);
 	if (isdead(*enemy)){
 		sprintf(msg, "%s a perdu !", enemy->name);
 		msgbox(wmenu, msg);
-		//sleep(2);
+		sleep(2);
 		return 1;
 	}
 	return 0;
@@ -190,9 +201,9 @@ int animationAllyAttack(window_  gwin, window_ wmenu, pokemon_* ally, pokemon_* 
 int animationEnemyAttack(window_ wfight, window_ wmenu, player* p, pokemon_** ally, pokemon_* enemy, int allyposx, int allyposy){
 	/* Creates the animation of text and health bar/numbers on the enemy attack */
 
-	char msg[50];
-	int choice, atkcoeff;
-	char const * actionsko[]={"changer de pokemon","fuir le combat"};
+	char msg[65];
+	int choice;
+	char const * actionsko[]={"Changer de pokemon","uir le combat"};
 	sprintf(msg, "%s sauvage attaque !", enemy->name);
 	msgbox(wmenu, msg);
 	sleep(1);
@@ -236,27 +247,25 @@ int animationCapture(window_ msgwin, player* p, pokemon_ poke, int ballIndex) {
 	/* Creates the animation for the capture and calls the functions used to update team if needed */
 
 	// Capture
-	char msg[30];
-	char const * item[] = {"pokeball", "Super Ball"};
+	char msg[75];
+	char const * item[] = {"Pokeball", "Super Ball"};
 	// p->bag[1] == Pokeballs, 3==Super Balls
 	int index = ballIndex*2+1;
 	if (p->bag[index].qty){
 		p->bag[index].qty -= 1;
 		sprintf(msg, "%s utilise une %s !", p->name, item[ballIndex]);
 		msgbox(msgwin, msg);
-		//sleep(1); // For the suspens
+		sleep(1); // For the suspens
 		if ((rand()%101 > 10+poke.pv*60/poke.pvmax-ballIndex*30)){
 			msgbox(msgwin, "Tadaa !", 0, strlen(msg)+1, 0);
-			if (!addPokeTeam(p, poke)){
-				sprintf(msg, "%s a ete capture !", poke.name);
-				msgbox(msgwin, msg);
-			} else {
-				sprintf(msg, "%s a ete capture !", poke.name);
-				msgbox(msgwin, msg);
+			sleep(1);
+			sprintf(msg, "%s a ete capture !", poke.name);
+			msgbox(msgwin, msg);
+			if (addPokeTeam(p, poke)){
 				msgbox(msgwin, "L'equipe est pleine, il a ete envoye", 1, 0, 0);
 				msgbox(msgwin, "sur votre PC.", 2, 0, 0);
 			}
-			//sleep(1);
+			sleep(1);
 			return 2;
 		} else {
 			msgbox(msgwin, "Capture ratee !");
@@ -265,7 +274,7 @@ int animationCapture(window_ msgwin, player* p, pokemon_ poke, int ballIndex) {
 		sprintf(msg, "Vous n'avez plus de pokeball !", p->name);
 		msgbox(msgwin, msg);
 	}
-	//sleep(1);
+	sleep(1);
 	return 0;
 }
 
@@ -273,7 +282,7 @@ void animationPotion (window_ msgwin, player_* p, pokemon_* poke, int potionInde
 	/* Creates the animation for the potion and updates pokemon's pv */
 
 	char msg[30];
-	char const * item[] = {"potion", "Super Potion"};
+	char const * item[] = {"Potion", "Super Potion"};
 	// p->bag[1] == potion, 3==Super Potion
 	int index = potionIndex*2;
 	// p->bag[0] == Potions
@@ -281,12 +290,12 @@ void animationPotion (window_ msgwin, player_* p, pokemon_* poke, int potionInde
 		p->bag[index].qty -= 1;
 		sprintf(msg, "%s utilise une %s !", p->name, item[potionIndex]);
 		msgbox(msgwin, msg);
-		//sleep(1);
+		sleep(1);
 		poke->pv = min(poke->pv+20*(index==0)+50*(index==1), poke->pvmax);
-		//sleep(1);
+		sleep(1);
 	} else {
 		msgbox(msgwin, "Vous n'avez plus de potions !");
-		//sleep(1);
+		sleep(1);
 	}
 }
 
@@ -298,17 +307,6 @@ void animationAtkEffect(window_ w, pokemon_ atk, pokemon_ def){
 		} else {	// atkcoeff == 0
 			msgbox(w, "Aucune effet !");
 		}
-		//sleep(2);
+		sleep(2);
 	}
-}
-
-int escape(window_ wmenu){
-	if (rand()%3){
-		msgbox(wmenu, "Vous prenez la fuite !");
-		sleep(1);
-		return 3;
-	}
-	msgbox(wmenu, "Fuite impossible !");
-	sleep(1);
-	return 0;
 }
