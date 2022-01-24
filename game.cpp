@@ -13,6 +13,8 @@
 
 int main(){
 
+	mtrace();
+
 	// Creates pointers to place windows of ncurses in
 	window_ wgame;// = initWindow(LINES, COLS, 0, 0);
 	wgame.w = initscr();
@@ -67,9 +69,9 @@ int main(){
 	// encounter ?
 	int e;
 	// encounter probability, 1 over ...
-	int ep = 20;
+	int ep = 50;
 	// Probability in Grass Modifier
-	int pgm = 10;
+	int pgm = ep/2; // Currently grass is unused
 
 	pokemon_ wild;
 
@@ -128,7 +130,7 @@ int main(){
 		msgbox(wgame, "Game Over", LINES/2+1, COLS/2-5, 0);
 	}
 
-	sleep(3);
+	//sleep(3);
 
 	msgbox(wgame, "Jeu programme par Lucie et Philippe", LINES/2, COLS/2-18);
 
@@ -140,6 +142,8 @@ int main(){
 
 	// Closes ncurses
 	endwin();
+
+	muntrace();
 
 	return 0;
 	

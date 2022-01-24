@@ -64,6 +64,7 @@ int menulist(window_ wmenu, char const ** choices, int menulength, int offsetx, 
 			case 9 :
 			case 10 :
 			case 32 :
+			case 67 :
 				return selection;
 
 			// Case to be ignored, if returns -1 the value should not be used as a choice, i.e. it allows to get out of the menu
@@ -306,43 +307,23 @@ void pkmnInfoDisplay(window_ wfight, int posx, int posy, pokemon_ poke){
 	Positions are relative to the parent window
 	*/
 
-	// init_pair(1, COLOR_WHITE, COLOR_BLACK);
-	// init_pair(2, COLOR_GREEN, COLOR_BLACK);
-	// init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-	// init_pair(4, COLOR_RED, COLOR_BLACK);
-
 	posx += wfight.posx;
 	posy += wfight.posy;
 
-	// char hpnum[15];
-	// char hpbar[30];
 	char hp[21] = "                    ";
 	float hbar;
 	int color = 1;
 	float hbarmax = 19;
 	hbar = (int)((float)(poke.pv)/poke.pvmax*hbarmax);
-	// if (hbar <= 10){
-	// 	color = 3;
-	// }
-	// if (hbar <= 2){
-	// 	color = 4;
-	// }
 	for (int i = 0; i < hbar; i++){
 		hp[i] = '=';
 	}
 
-	// sprintf(hpnum, "PV : %2d/%2d", poke.pv, poke.pvmax);
-	// sprintf(hpbar, "   : %s", hp);
 	attron(A_BOLD);
-	// msgbox(wfight, poke.name, posx, posy, 0);
 	mvprintw(posx, posy, "%-25s", poke.name);
 	attroff(A_BOLD);
-	// msgbox(wfight, hpnum, posx+1, posy, 0);
 	mvprintw(posx+1, posy, "PV : %3d/%-3d", poke.pv, poke.pvmax);
-	// attron(COLOR_PAIR(color));
-	// msgbox(wfight, hpbar, posx+2, posy, 0);
 	mvprintw(posx+2, posy, "   : %s", hp);
-	// attroff(COLOR_PAIR(color));
 	wrefresh(wfight.w);
 }
 
@@ -414,15 +395,15 @@ void greetScreen(window_ w, char* name){
 
 	int txtposx = LINES/2-5;
 	msgbox(w, "Bienvenue dans le monde des Pokemon !", txtposx, COLS/2-25);
-	sleep(2);
+	//sleep(2);
 	msgbox(w, "Tu devras m'aider a remplir le Pokedex local,", txtposx+2, COLS/2-25, 0);
 	msgbox(w, "voici un Pikachu qui deviendra ton meilleur compagnon.", txtposx+3, COLS/2-25, 0);
-	sleep(4);
+	//sleep(4);
 	msgbox(w, "Tu peux consulter le Pokedex en appuyant sur P ou Espace.", txtposx+5, COLS/2-25, 0);
-	sleep(2);
+	//sleep(2);
 	msgbox(w, "Il est maintenant l'heure pour toi de", txtposx+7, COLS/2-25, 0);
 	msgbox(w, "tous les capturer !", txtposx+8, COLS/2-25, 0);
-	sleep(1);
+	//sleep(1);
 	button(w, (char*)"C'est parti !", txtposx+11, COLS/2-6);
 
 	wempty(w);

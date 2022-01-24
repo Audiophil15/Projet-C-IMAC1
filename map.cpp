@@ -36,13 +36,27 @@ map_ initMap(int height, int width){
 	b.width = width;
 	b.grid = (int*)malloc(sizeof(int)*b.width*b.height);
 
-	int grassAreas = b.width*b.height/1000;
 	
 	for (int i = 0; i < b.height; i++){
 		for (int j = 0; j < b.width; j++){
 			setTab(0, &b, i, j);
 		}
 	}
+
+	// Can be uncommented to experiment with grass
+	// int grassAreas = b.width*b.height/1000;
+	// int sizex, sizey, posx, posy;
+	// for (int i = 0; i < grassAreas; i++){
+	// 	sizex = rand()%(height/5);
+	// 	sizey = rand()%(width/5);
+	// 	posx = rand()%(height-sizex);
+	// 	posy = rand()%(width-sizey);
+	// 	for (int j = posx; j < posx+sizex; j++){
+	// 		for (int jj = posy; jj < posy+sizey; jj++){
+	// 			setTab(1, &b, j, jj);
+	// 		}
+	// 	}
+	// }
 
 	return b;
 }
