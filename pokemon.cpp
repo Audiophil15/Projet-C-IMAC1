@@ -19,11 +19,6 @@ int coeff[] =  {1, 1, 1, 1, 1, 1,
 				1, 1, 0, 2, 1, 2,
 				1, 2, 2, 0, 0, 1};
 
-// int coeff[] =  {1, 1, 2, 1,
-// 				1, 1, 0, 2,
-// 				0, 2, 1, 1,
-// 				1, 0, 2, 1};
-
 pokemon_ initPokemon(species s){
 	/* Inits a pokemon with its caracteristics according to its species */
 	pokemon_ p;

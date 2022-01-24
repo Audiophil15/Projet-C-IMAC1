@@ -352,8 +352,7 @@ void splashscreen(window_ win){
 
 	// Index, FG, BG
 	init_pair(1, COLOR_RED, COLOR_RED);
-	init_pair(2, COLOR_BLACK, COLOR_BLACK);
-	init_pair(3, COLOR_WHITE, COLOR_WHITE);
+	init_pair(2, COLOR_WHITE, COLOR_WHITE);
 
 	//create the pokeball
 
@@ -372,12 +371,9 @@ void splashscreen(window_ win){
 	for (int i = 0; i < strlen(art); i++){
 		if (art[i]=='$'){
 			color = 1;
-		// } else if (art[i]=='-'){
 		} else if (art[i]=='@'){
-			color = 3;
+			color = 2;
 		}
-		
-
 		if (art[i]=='.'){
 			offx += 1;
 		} else if(art[i]!=' '){
@@ -386,24 +382,6 @@ void splashscreen(window_ win){
 			attroff(COLOR_PAIR(color));
 		}
 	}
-	
-	//"             @@@@@@@@@@              .         @@@@@@$$$$$$@@@@@@@         .     @@@@@$$$$$$$$$$$$$$$$$@@@@@     .   @@@@$$$$$$$$$$$$$$$$$$$$$$$@@@@   .  @@@$$$$$$$$$$$$$$$$$$$$$$$$$$$@@@  . @@@$$$$$$$$$$$@@@@@@@$$$$$$$$$$$@@@ .@@@$$$$$$$$$$@@@-----@@@$$$$$$$$$$@@@.@@@@@@@@@@@@@@@-------@@@@@@@@@@@@@@@.@@@          @@@-----@@@          @@@. @@@-----------@@@@@@@----------@@@ .  @@@---------------------------@@@  .   @@@-------------------------@@@   .     @@@@-------------------@@@@     .        @@@@@@---------@@@@@@        .            @@@@@@@@@@@@@  
-
-	// msgbox$pokeball, "             @@@@@@@@@@@             ", 0, 0, 0);
-	// msgbox(pokeball, "         @@@@@@$$$$$$$@@@@@@         ", 1, 0, 0);
-	// msgbox(pokeball, "     @@@@@$$$$$$$$$$$$$$$$$@@@@@     ", 2, 0, 0);
-	// msgbox(pokeball, "   @@@@$$$$$$$$$$$$$$$$$$$$$$$@@@@   ", 3, 0, 0);
-	// msgbox(pokeball, "  @@@$$$$$$$$$$$$$$$$$$$$$$$$$$$@@@  ", 4, 0, 0);
-	// msgbox(pokeball, " @@@$$$$$$$$$$$@@@@@@@$$$$$$$$$$$@@@ ", 5, 0, 0);
-	// msgbox(pokeball, " @@@$$$$$$$$$@@@     @@@$$$$$$$$$@@@ ", 6, 0, 0);
-	// msgbox(pokeball, " @@@@@@@@@@@@@@       @@@@@@@@@@@@@@ ", 7, 0, 0);
-	// msgbox(pokeball, " @@@         @@@     @@@         @@@ ", 8, 0, 0);
-	// msgbox(pokeball, " @@@           @@@@@@@           @@@ ", 9, 0, 0);
-	// msgbox(pokeball, "  @@@                           @@@  ", 10, 0, 0);
-	// msgbox(pokeball, "   @@@@                       @@@@   ", 11, 0, 0);
-	// msgbox(pokeball, "     @@@@@                 @@@@@     ", 12, 0, 0);
-	// msgbox(pokeball, "        @@@@@@         @@@@@@        ", 13, 0, 0);
-	// msgbox(pokeball, "            @@@@@@@@@@@@@            ", 14, 0, 0);
 
 	// create the welcome message
 
@@ -422,6 +400,7 @@ void splashscreen(window_ win){
 	//create the "play" button
 
 	button(win, (char*)"PLAY", welcome.posx+welcome.sx+2, COLS/2-1);
+	
 }
 
 void greetScreen(window_ w, char* name){
@@ -455,15 +434,13 @@ void button(window_ w, char* text, int posx, int posy, int sx, int sy){
 	if (!sy){
 		button.sy=strlen(text);
 	}
-	button.posx=posx;//welcome.posx+welcome.sx+2;
-	button.posy=posy;//COLS/2-button.sy/2+1;
+	button.posx=posx;
+	button.posy=posy;
 	button.w= derwin(w.w, button.sx+2, button.sy+2, button.posx-1, button.posy-1);
 	box(button.w, ACS_VLINE, ACS_HLINE);
 
 	attron(A_REVERSE);
 	attron(A_BOLD);
-	// char msg2 [5];
-	// sprintf (msg2, "PLAY");
 	msgbox(button, text);
 	attroff(A_REVERSE);
 	attroff(A_BOLD);

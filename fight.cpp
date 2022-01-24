@@ -35,13 +35,6 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 	int allyposy;
 
 	// Up Left Corner
-	// enemyposx = wfight.posx+1;
-	// enemyposy = wfight.posy+10;
-	// // Bottom Right
-	// allyposx = wfight.posx+wfight.sx/2-2;
-	// allyposy = wfight.posy+3*wfight.sy/4-5;
-
-	// Up Left Corner
 	enemyposx = 1;
 	enemyposy = 10;
 	// Bottom Right
@@ -50,7 +43,7 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 
 	char const * actions[] = {"Attaque", "Pokemon", "Sac", "Fuite"};
 	int menulen = 4;
-	int tmpindex;//, teamindex = 0;
+	int tmpindex;
 	int blockenemy;	// Allows to block the enemy's attack when quitting the "change pokemon" menu without changing
 	int choice;		// What action is chosen
 	char msg [100];	// Used to print message
@@ -58,7 +51,7 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 
 	// end = 1 : victory; end = 2 : defeat; end = 3 : flee
 	int end=0;
-	while (end == 0 && choice != 120){ //120 = x // DEBUG
+	while (end == 0){
 
 		// Used to bypass enemy's turn
 		blockenemy = 0;
@@ -81,7 +74,6 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 				blockenemy = !(changePokemon(wmenu, p, &ally));
 				pkmnInfoDisplay(wfight, allyposx, allyposy, *ally);	
 				break;
-	
 			// Cases 2 and 3 need to be merged in one "Inventory"/"Bag"
 			case 2:
 				// Capture
@@ -108,12 +100,6 @@ void fight(window_ win, player_* p, pokemon_* enemy){
 				}
 				// end = animationCapture(wmenu, p, *enemy);
 				break;
-
-			// case 3:
-			// 	// Potion
-			// 	animationPotion(wfight, wmenu, p, ally, allyposx, allyposy);
-			// 	break;
-
 			case 3:
 				// Escape
 				// end = 3 if escape if successful
@@ -148,24 +134,19 @@ void findItems(window_ w, player_* p){
 	int item = rand()%4;
 	char msg[40];
 	p->bag[item].qty += qty;
-	switch (item)
-	{
+	switch (item){
 	case 0:
 		sprintf(msg, "Vous avez obtenu %d Potion !", qty);
 		break;
-	
 	case 1:
 		sprintf(msg, "Vous avez obtenu %d Pokeball !", qty);
 		break;
-	
 	case 2:
 		sprintf(msg, "Vous avez obtenu %d Super Potion !", qty);
 		break;
-	
 	case 3:
 		sprintf(msg, "Vous avez obtenu %d Super Ball !", qty);
 		break;
-	
 	default:
 		break;
 	}

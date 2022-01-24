@@ -52,9 +52,6 @@ void delMap(map_ map){
 }
 
 void refreshMap(WINDOW* win, map_ b){
-	// TODO : Map case is normal or grass, 0 normal or 1 grass
-	//		  Todo after the game works
-
 	/* Refreshes the map display according to what's in the map's grid */
 
 	// Contain the position x and y of the map box
