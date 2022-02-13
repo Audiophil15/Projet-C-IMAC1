@@ -37,17 +37,22 @@ team_ initTeam(){
 }
 
 void delPlayer(player_ p){
-	delTeam(p.team);
-	delInventory(p.bag);
+	delTeam(p);
+	delInventory(p);
+	delPkdx(p);
 }
 
-void delTeam(team_ pteam){
+void delTeam(player_ p){
 	/* Free allocated memory */
-	free(pteam.pokemons);
+	free(p.team.pokemons);
 }
 
-void delInventory(inventory_ invent){
-	free(invent);
+void delInventory(player_ p){
+	free(p.bag);
+}
+
+void delPkdx(player_ p){
+	free(p.pokedex.knownSpecies);
 }
 
 int addPokeTeam(player* p, pokemon_ poke){

@@ -138,7 +138,7 @@ int main(){
 
 	// Free allocated memory
 	delMap(b);
-	delTeam(p.team);
+	delPlayer(p);
 
 	// Closes ncurses
 	endwin();

@@ -271,7 +271,7 @@ int animationCapture(window_ msgwin, player* p, pokemon_ poke, int ballIndex) {
 			msgbox(msgwin, "Capture ratee !");
 		}
 	} else {
-		sprintf(msg, "Vous n'avez plus de pokeball !", p->name);
+		sprintf(msg, "Vous n'avez plus de pokeball !");
 		msgbox(msgwin, msg);
 	}
 	sleep(1);
@@ -281,7 +281,7 @@ int animationCapture(window_ msgwin, player* p, pokemon_ poke, int ballIndex) {
 void animationPotion (window_ msgwin, player_* p, pokemon_* poke, int potionIndex){
 	/* Creates the animation for the potion and updates pokemon's pv */
 
-	char msg[30];
+	char msg[128];
 	char const * item[] = {"Potion", "Super Potion"};
 	// p->bag[1] == potion, 3==Super Potion
 	int index = potionIndex*2;

@@ -29,8 +29,10 @@ typedef struct player{
 
 player initPlayer(char* name, map_*, int, int);
 team_ initTeam();
-void delTeam(team_);
-void delInventory(inventory_ invent);
+void delPlayer(player_);
+void delTeam(player_);
+void delInventory(player_);
+void delPkdx(player_);
 int addPokeTeam(player* p, pokemon_ poke);
 int getFirstAliveIndex(player p);
 int movePlayer(player*, map_*, char);
